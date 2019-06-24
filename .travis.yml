@@ -19,7 +19,7 @@ jdk:
 #  - openjdk11
 
 install: 
-  - cd $TRAVIS_REPO_SLUG/..
+  - cd ..
   - git clone https://github.com/Funz/funz-profile
   - cd $TRAVIS_REPO_SLUG
   - ant dist
