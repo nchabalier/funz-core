@@ -144,7 +144,7 @@
                 <!--echo message="${test.class.id}"/-->
                 
                 <!--record name="${test.class.id}.txt" action="start" /-->
-                <java classname="${test.class.id}" fork="true" timeout="360000">
+                <java classname="${test.class.id}" fork="true" timeout="360000" failonerror="false" errorproperty="test.failed">
                     <classpath refid="root.classpath" />
                     <classpath path="${build.dir}" />
                     <classpath path="${unit.test.jar}" />
@@ -156,22 +156,7 @@
                 
             </sequential>
         </for>
-
-    </target>
-
-
-    <target name="profile-ASCII.Parser" depends="dist">
-        <!-- launch the client application -->
-        <java jvm="java" classname="org.funz.util.ASCII" fork="true"  >
-            <classpath>
-                <pathelement path="build:lib/commons-io.jar:lib/commons-lang.jar:lib/jmathio.jar"/>
-            </classpath>
-            <assertions>
-                <enable/>
-            </assertions>
-            <!--jvmarg value="-DprintLog=true" /-->
-            <jvmarg value="-agentpath:/home/richet/opt/netbeans-6.8/profiler3/lib/deployed/jdk16/linux-amd64/libprofilerinterface.so=/home/richet/opt/netbeans-6.8/profiler3/lib,5140" />
-        </java>
+        <fail message="Test failure detected, check test results." if="test.failed" />
     </target>
 
     <!-- documentation generation -->
