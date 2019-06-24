@@ -144,7 +144,7 @@
                 <!--echo message="${test.class.id}"/-->
                 
                 <!--record name="${test.class.id}.txt" action="start" /-->
-                <java classname="${test.class.id}" fork="true" timeout="360000" failonerror="false" errorproperty="test.failed">
+                <java classname="${test.class.id}" fork="true" timeout="360000" failonerror="false" resultproperty="@{test.class}.failed">
                     <classpath refid="root.classpath" />
                     <classpath path="${build.dir}" />
                     <classpath path="${unit.test.jar}" />
@@ -153,10 +153,18 @@
                     </assertions>
                 </java>        
                 <!--record name="${test.class.id}.txt" action="stop"/-->
-                
+                <echo message="I'm here. Now what? ${@{test.class}.failed}"/>
+                <if>
+                    <equals arg1="${@{test.class}.failed}" arg2="0" />
+                    <then>
+                    </then>
+                    <else>
+                        <property name="failed" value="1" />
+                    </else>
+                </if>
             </sequential>
         </for>
-        <fail message="Test failure detected, check test results." if="test.failed" />
+        <fail message="Test failure detected, check test results." if="failed" />
     </target>
 
     <!-- documentation generation -->

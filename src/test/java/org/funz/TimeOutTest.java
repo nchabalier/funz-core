@@ -160,7 +160,8 @@ public class TimeOutTest {
         final Object dummy = new Object();
         final Object dummydefault = new Object();
         final TimeOut t = new TimeOut("testInterrupt") {
-volatile boolean break_it = false;
+            volatile boolean break_it = false;
+
             @Override
             protected Object command() {
                 try {
@@ -179,10 +180,9 @@ volatile boolean break_it = false;
 
             @Override
             protected boolean break_command() {
-            break_it = true;
-return true;
+                break_it = true;
+                return true;
             }
-            
 
             @Override
             protected Object defaultResult() {
