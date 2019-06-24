@@ -1,0 +1,8 @@
+language: java
+install: ant dist
+jdk:
+  - oraclejdk8
+  - oraclejdk11
+  - openjdk10
+  - openjdk11
+script: ant test
