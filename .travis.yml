@@ -1,5 +1,8 @@
 language: java
-install: ant dist
+install: 
+  - git clone https://github.com/Funz/funz-profile $TRAVIS_REPO_SLUG/..
+  - cd $TRAVIS_REPO_SLUG
+  - ant dist
 jdk:
   - oraclejdk8
   - oraclejdk11
