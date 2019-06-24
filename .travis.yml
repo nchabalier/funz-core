@@ -18,10 +18,11 @@ jdk:
 #  - openjdk10
 #  - openjdk11
 
-install: 
+install:
+  - WD=$PWD
   - cd ..
   - git clone https://github.com/Funz/funz-profile
-  - cd $TRAVIS_REPO_SLUG
+  - cd $WD
   - ant dist
 
 script: ant test
