@@ -14,9 +14,9 @@ language: java
 #      # use `choco` command
 jdk:
   - oraclejdk8
-  - oraclejdk11
-  - openjdk10
-  - openjdk11
+#  - oraclejdk11
+#  - openjdk10
+#  - openjdk11
 
 install: 
   - cd $TRAVIS_REPO_SLUG/..
