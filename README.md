@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/yannrichet/jmathplot.png)](https://travis-ci.org/Funz/funz-core)
+[![Build Status](https://travis-ci.org/Funz/funz-core.png)](https://travis-ci.org/Funz/funz-core)
 
 # funz-core
 
