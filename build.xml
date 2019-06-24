@@ -1,0 +1,240 @@
+<project name="funz-core" default="help" basedir=".">
+
+    <property name="funz-root.dir" value="${basedir}/.." />
+    <property name="funz.properties" location="../funz-profile/funz.properties" />
+    <!-- funz dependent properties -->
+    <property file="${funz.properties}" />
+    <property file="funz-core.properties"/>
+    <!-- funz core dependent properties -->
+    <property file="configuration.properties"/>
+    <!-- user dependent properties -->
+
+    <path id="antcontrib.classpath">
+        <pathelement location="../funz-profile/lib/ant-contrib-0.6.jar" />
+    </path>
+
+    <taskdef name="for" taskname="for" classname="net.sf.antcontrib.logic.For" classpathref="antcontrib.classpath" />
+    <taskdef name="if" taskname="if" classname="net.sf.antcontrib.logic.IfTask" classpathref="antcontrib.classpath" />
+    <taskdef name="propertycopy" taskname="propertycopy" classname="net.sf.antcontrib.property.PropertyCopy" classpathref="antcontrib.classpath" />
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="antcontrib.classpath" />
+   
+        <!-- verify that the ${funz.properties} file has been set -->
+    <fail message="Set the funz properties file ${funz.properties} from packaging/config with a symbolic link in order to set project global configuration:
+   try something like    ln -s packaging/config/funz.default.properties funz.properties       from the root directory">
+        <condition>
+            <not>
+                <and>
+                    <available file="${funz.properties}" type="file" />
+                </and>
+            </not>
+        </condition>
+    </fail>
+
+    <property name="constants.java" location="${src.dir}/org/funz/Constants.java" />
+    <property name="constants.tmpl" location="${src.dir}/org/funz/Constants.tmpl" />
+
+    <!-- pathes and classpathes -->
+    <path id="root.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <path id="compile.path" >
+    <path refid="root.classpath" />
+    </path>
+
+    <path id="javadoc.jars">
+        <fileset dir="${javadoc.lib.dir}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <!-- clean targets -->
+    <target name="clean" description="clean up">
+        <delete dir="${build.dir}" failonerror="false" />
+        <delete dir="${build.ide.dir}" failonerror="false" />
+    </target>
+
+    <target name="clean-dist" description="clean up">
+        <delete dir="${dist.dir}" failonerror="false" />
+    </target>
+
+    <target name="clean-doc" description="">
+        <delete dir="${doc.dir}" failonerror="false" />
+    </target>
+
+    <target name="clean-all" depends="clean, clean-dist, clean-doc" >
+    </target>
+
+    <!-- compilation and distribution -->
+
+    <target name="resource" >
+
+        <copy file="${constants.tmpl}" tofile="${constants.java}" overwrite="true" />
+        <echo message="Version: ${core.version}"/>
+        <replace file="${constants.java}" token="__VERSION__" value="${core.version}" />
+        <tstamp>
+            <format property="build.date" pattern="dd/MM/yyyy HH:mm"/>
+        </tstamp>
+        <echo message="Build date: ${build.date}"/>
+        <replace file="${constants.java}" token="__BUILDATE__" value="${build.date}" />
+        <!--replace file="${constants.java}"
+                                 token="__PROTOCOL__" value="${protocol}"/-->
+        <copy todir="${dist.lib.dir}">
+            <fileset dir="${lib.dir}">
+                <include name="*" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile" description="compile the source ">
+        <mkdir dir="${build.dir}" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}" encoding="ISO-8859-1" source="${java.compiler.version}" target="${java.compiler.version}" >
+            <classpath refid="root.classpath" />
+        </javac>
+    </target>
+
+    <target name="compile-test" depends="compile" description="compile the source ">
+        <mkdir dir="${build.dir}" />
+        <javac srcdir="${test.dir}" destdir="${build.dir}" encoding="ISO-8859-1" source="${java.compiler.version}" target="${java.compiler.version}" >
+            <classpath refid="root.classpath" />
+            <classpath path="${build.dir}" />
+            <classpath path="${unit.test.jar}" />
+        </javac>
+    </target>
+
+    <target name="dist" depends="resource,compile" description="generate the distribution">
+        <mkdir dir="${dist.dir}" />
+        <mkdir dir="${dist.lib.dir}" />
+        <jar destfile="${dist.lib.dir}/${core.jar.name}">
+            <fileset dir="${build.dir}">
+                <include name="org/funz/**/*.class" />
+            </fileset>
+        </jar>
+    </target>
+
+    <property name="unit.test.jar" value="../funz-profile/lib/concutest-junit-4.7-withrt.jar" />
+    <!--property name="unit.test.jar" value="../funz-profile/lib/junit-4.3.jar" /-->
+
+    <!-- testing the funz client module -->
+    <target name="test" depends="compile-test">
+        
+        <fileset id="tests" dir="${build.dir}" includes="**/*Test.class" />
+        <!--property name="tests.p" refid="tests"/>
+        <echo message="${tests.p}"/-->
+
+        <pathconvert pathsep="${line.separator}" property="tests.list" refid="tests">
+            <map from="${build.dir}/" to=""/>
+        </pathconvert>
+        <!--echo message="${tests.list}"/>
+        <echo message="================"/-->
+        
+        <for list="${tests.list}" param="test.class" delimiter="${line.separator}">
+        <!--for list="org/funz/script/MathExpressionTest.class" param="test.class" delimiter="${line.separator}"-->
+        <!--for list="org/funz/api/BatchRunTest.class" param="test.class" delimiter="${line.separator}"-->
+            <sequential>
+                <echo message="@{test.class}"/>
+                <echo message="======================================="/>
+                <echo message="============= @{test.class} ============="/>
+                <echo message="========================================="/>
+                <propertyregex property="test.class.name" input="@{test.class}" regexp="\.class" replace="" global="true"  override="true"/>
+                <!--echo message="${test.class.name}"/-->
+                <propertyregex property="test.class.id" input="${test.class.name}" regexp="/" replace="\." global="true"  override="true"/>
+                <!--echo message="${test.class.id}"/-->
+                
+                <!--record name="${test.class.id}.txt" action="start" /-->
+                <java classname="${test.class.id}" fork="true" timeout="360000">
+                    <classpath refid="root.classpath" />
+                    <classpath path="${build.dir}" />
+                    <classpath path="${unit.test.jar}" />
+                    <assertions>
+                        <enable/>
+                    </assertions>
+                </java>        
+                <!--record name="${test.class.id}.txt" action="stop"/-->
+                
+            </sequential>
+        </for>
+
+    </target>
+
+
+    <target name="profile-ASCII.Parser" depends="dist">
+        <!-- launch the client application -->
+        <java jvm="java" classname="org.funz.util.ASCII" fork="true"  >
+            <classpath>
+                <pathelement path="build:lib/commons-io.jar:lib/commons-lang.jar:lib/jmathio.jar"/>
+            </classpath>
+            <assertions>
+                <enable/>
+            </assertions>
+            <!--jvmarg value="-DprintLog=true" /-->
+            <jvmarg value="-agentpath:/home/richet/opt/netbeans-6.8/profiler3/lib/deployed/jdk16/linux-amd64/libprofilerinterface.so=/home/richet/opt/netbeans-6.8/profiler3/lib,5140" />
+        </java>
+    </target>
+
+    <!-- documentation generation -->
+    <target name="doc" depends="doc-javadoc" >
+    </target>
+
+    <target name="doc-Parser" >
+        <mkdir dir="${javadoc.dir}" />
+        <mkdir dir="${javadoc.dir}/parser" />
+        <javadoc sourcepath="${src.dir}" packagenames="org.funz.util.*" classpathref="compile.path" destdir="${javadoc.dir}/parser" access="public">
+        </javadoc>
+    </target>
+
+    <target name="doc-javadoc" >
+        <mkdir dir="${javadoc.dir}" />
+        <javadoc sourcepath="${src.dir}" classpathref="compile.path" destdir="${javadoc.dir}" access="private">
+            <doclet name="org.umlgraph.doclet.UmlGraphDoc" pathref="javadoc.jars">
+                <param name="-attributes" />
+                <param name="-enumerations" />
+                <param name="-enumconstants" />
+                <param name="-operations" />
+                <param name="-qualify" />
+                <param name="-types" />
+                <param name="-visibility" />
+                <param name="-inferrel"/>
+                <param name="-inferdep"/>
+                <param name="-hide" value="java.*"/>
+                <param name="-collpackages" value="java.util.*"/>
+                <param name="-qualify"/>
+                <param name="-postfixpackage"/>
+                <param name="-nodefontsize" value="9"/>
+                <param name="-nodefontpackagesize" value="7"/>
+            </doclet>
+        </javadoc>
+        <apply executable="${dot.exec}" dest="${javadoc.dir}" parallel="false">
+            <arg value="-Tpng"/>
+            <arg value="-o"/>
+            <targetfile/>
+            <srcfile/>
+            <fileset dir="${javadoc.dir}" includes="*.dot"/>
+            <mapper type="glob" from="*.dot" to="*.png"/>
+        </apply>
+    </target>
+
+    <!-- help -->
+    <target name="help" description="display the help on standard output">
+        <echo message="********************************" />
+        <echo message="***" />
+        <echo message="***    Funz core" />
+        <echo message="***" />
+        <echo message="********************************" />
+        <echo />
+        <echo message="help                 :   display this help" />
+        <echo />
+        <echo message="clean-all            :   clean everything that can be generated by ant targets" />
+        <echo message="clean                :   clean temp directories (./build, ./bin)" />
+        <echo message="clean-dist           :   clean distribution (./dist)" />
+        <echo message="clean-doc            :   clean documentation (./doc)" />
+        <echo />
+        <echo message="dist                 :   generate a distribution" />
+        <echo message="doc                  :   generate the code documentation" />
+
+    </target>
+
+
+</project>
