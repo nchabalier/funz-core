@@ -1,5 +1,8 @@
 package org.funz.util;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public abstract class TimeOut {
 
     /**
@@ -78,7 +81,12 @@ public abstract class TimeOut {
             t = null;
         }
         Runtime.getRuntime().removeShutdownHook(shutdown); // Do not forget otherwise stack will be charged...
-        //t = null;
+        if (interrupt != null) {
+            try {
+                interrupt.join();
+            } catch (InterruptedException ex) {
+            }
+        }
     }
 
     public void interrupt() {
@@ -90,20 +98,22 @@ public abstract class TimeOut {
         interrupted = true;
         end();
     }
-
+    
+    Thread interrupt;
     public void end() {
-        if (t != null) {
-            new Thread(new Runnable() {
+        if (t != null && interrupt==null) {
+            interrupt = new Thread(new Runnable() {
 
                 public void run() {
-                    try{
-                    if (t != null) {
-                        t.interrupt();
-                        t = null;
-                    }
-                    }catch(Exception e){}//just to avoid raising npe when t is destroyed
+                    try {
+                        if (t != null) {
+                            t.interrupt();
+                            t = null;
+                        }
+                    } catch(Exception e){}//just to avoid raising npe when t is destroyed
                 }
-            }, "TimeOut " + name + " interrupt").start();
+            }, "TimeOut " + name + " interrupt");
+            interrupt.start();
         }
         //System.err.println("interrupt() done");
         //t = null;

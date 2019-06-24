@@ -247,6 +247,7 @@ return true;
         }
         assert t.getResult() != null : "returned something while exception throw:" + t.getResult();
 
+        t.join();
     }
 
     @Test
