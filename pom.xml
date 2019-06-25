@@ -23,36 +23,26 @@
 			<groupId>com.github.yannrichet</groupId>
 			<artifactId>JMathIO</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/jmathio.jar</systemPath>
 		</dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
-			<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/commons-io-2.4.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
-			<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/commons-lang-2.6.jar</systemPath>
         </dependency>
 		<dependency>
     		<groupId>org.apache.commons</groupId>
     		<artifactId>commons-exec</artifactId>
     		<version>1.1</version>
-			<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/commons-exec-1.1.jar</systemPath>
 		</dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>2.1.0</version>
-			<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/jsonpath-2.1.jar</systemPath>
         </dependency>
 	</dependencies>
 
