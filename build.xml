@@ -4,14 +4,15 @@
     <property name="funz.properties" location="../funz-profile/funz.properties" />
     <!-- funz dependent properties -->
     <property file="${funz.properties}" />
-    <property file="funz-core.properties"/>
     <!-- funz core dependent properties -->
-    <property file="configuration.properties"/>
-    <!-- user dependent properties -->
+    <property file="funz-core.properties"/>
 
     <path id="antcontrib.classpath">
         <pathelement location="../funz-profile/lib/ant-contrib-0.6.jar" />
     </path>
+
+    <property name="unit.test.jar" value="../funz-profile/lib/concutest-junit-4.7-withrt.jar" />
+    <!--property name="unit.test.jar" value="../funz-profile/lib/junit-4.3.jar" /-->
 
     <taskdef name="for" taskname="for" classname="net.sf.antcontrib.logic.For" classpathref="antcontrib.classpath" />
     <taskdef name="if" taskname="if" classname="net.sf.antcontrib.logic.IfTask" classpathref="antcontrib.classpath" />
@@ -19,8 +20,8 @@
     <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="antcontrib.classpath" />
    
         <!-- verify that the ${funz.properties} file has been set -->
-    <fail message="Set the funz properties file ${funz.properties} from packaging/config with a symbolic link in order to set project global configuration:
-   try something like    ln -s packaging/config/funz.default.properties funz.properties       from the root directory">
+    <fail message="Set the funz properties file ${funz.properties} from funz-profile with a symbolic link in order to set project global configuration:
+          try something like   ln -s ../funz-profile/funz.properties    from the root directory">
         <condition>
             <not>
                 <and>
@@ -114,9 +115,6 @@
         </jar>
     </target>
 
-    <property name="unit.test.jar" value="../funz-profile/lib/concutest-junit-4.7-withrt.jar" />
-    <!--property name="unit.test.jar" value="../funz-profile/lib/junit-4.3.jar" /-->
-
     <!-- testing the funz client module -->
     <target name="test" depends="compile-test">
         
@@ -153,7 +151,6 @@
                     </assertions>
                 </java>        
                 <!--record name="${test.class.id}.txt" action="stop"/-->
-                <echo message="I'm here. Now what? ${@{test.class}.failed}"/>
                 <if>
                     <equals arg1="${@{test.class}.failed}" arg2="0" />
                     <then>
