@@ -20,7 +20,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.Funz</groupId>
+			<groupId>com.github.yannrichet</groupId>
 			<artifactId>JMathIO</artifactId>
 			<version>1.0</version>
 		</dependency>
