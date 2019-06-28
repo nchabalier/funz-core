@@ -51,7 +51,7 @@ script:
   - ant test
 
 after_success:
-  - mvn cobertura:cobertura
+  - mvn test
   - bash <(curl -s https://codecov.io/bash)
 
 before_deploy:
