@@ -11,6 +11,10 @@
         <pathelement location="../funz-profile/lib/ant-contrib-0.6.jar" />
     </path>
 
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="../funz-profile/lib/jacocoant.jar"/>
+    </taskdef>
+    
     <property name="unit.test.jar" value="../funz-profile/lib/concutest-junit-4.7-withrt.jar" />
     <!--property name="unit.test.jar" value="../funz-profile/lib/junit-4.3.jar" /-->
 
@@ -163,6 +167,38 @@
         </for>
         <fail message="Test failure detected, check test results." if="failed" />
     </target>
+
+    <target name="coverage" >
+<jacoco:coverage>  
+<antcall target="test"/>
+</jacoco:coverage>
+
+
+
+    <jacoco:merge destfile="merged.exec">
+        <fileset dir="executionData" includes="*.exec"/>
+    </jacoco:merge>
+
+<jacoco:report>
+                        
+    <executiondata>
+        <file file="merged.exec"/>
+    </executiondata>
+                        
+    <structure name="funz-core">
+        <classfiles>
+            <fileset dir="build"/>
+        </classfiles>
+        <sourcefiles encoding="UTF-8">
+            <fileset dir="src/main/java"/>
+        </sourcefiles>
+    </structure>
+                        
+    <html destdir="report"/>
+                        
+</jacoco:report>
+  </target>
+
 
     <!-- documentation generation -->
     <target name="doc" depends="doc-javadoc" >
