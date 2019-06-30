@@ -193,7 +193,7 @@
                 <!--echo message="${test.class.id}"/-->
                 
                 <!--record name="${test.class.id}.txt" action="start" /-->
-        <jacoco:coverage>  
+        <jacoco:coverage destfile="@{test.class}.exec">  
                 <java classname="${test.class.id}" fork="true" timeout="360000" failonerror="false" resultproperty="@{test.class}.failed">
                     <classpath refid="root.classpath" />
                     <classpath path="${build.dir}" />
@@ -217,7 +217,7 @@
         
 
         <jacoco:merge destfile="merged.exec">
-            <fileset dir="executionData" includes="*.exec"/>
+            <fileset dir="." includes="*.exec"/>
         </jacoco:merge>
 
         <jacoco:report>
@@ -235,7 +235,8 @@
                 </sourcefiles>
             </structure>
                         
-            <html destdir="report"/>
+            <html destdir="coverage"/>
+            <xml destfile="jacoco.xml"/>
                         
         </jacoco:report>
     </target>
