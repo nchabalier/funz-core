@@ -169,35 +169,33 @@
     </target>
 
     <target name="coverage" >
-<jacoco:coverage>  
-<antcall target="test"/>
-</jacoco:coverage>
+        <jacoco:coverage>  
+            <antcall target="test"/>
+        </jacoco:coverage>
 
+        <jacoco:merge destfile="merged.exec">
+            <fileset dir="executionData" includes="*.exec"/>
+        </jacoco:merge>
 
-
-    <jacoco:merge destfile="merged.exec">
-        <fileset dir="executionData" includes="*.exec"/>
-    </jacoco:merge>
-
-<jacoco:report>
+        <jacoco:report>
                         
-    <executiondata>
-        <file file="merged.exec"/>
-    </executiondata>
+            <executiondata>
+                <file file="merged.exec"/>
+            </executiondata>
                         
-    <structure name="funz-core">
-        <classfiles>
-            <fileset dir="build"/>
-        </classfiles>
-        <sourcefiles encoding="UTF-8">
-            <fileset dir="src/main/java"/>
-        </sourcefiles>
-    </structure>
+            <structure name="funz-core">
+                <classfiles>
+                    <fileset dir="build"/>
+                </classfiles>
+                <sourcefiles encoding="UTF-8">
+                    <fileset dir="src/main/java"/>
+                </sourcefiles>
+            </structure>
                         
-    <html destdir="report"/>
+            <html destdir="report"/>
                         
-</jacoco:report>
-  </target>
+        </jacoco:report>
+    </target>
 
 
     <!-- documentation generation -->
