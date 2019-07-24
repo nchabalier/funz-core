@@ -3,7 +3,18 @@
     <property name="funz-root.dir" value="${basedir}/.." />
     <property name="funz.properties" location="../funz-profile/funz.properties" />
     <!-- funz dependent properties -->
-    <property file="${funz.properties}" />
+    <property file="${funz.properties}" />        
+    <!-- verify that the ${funz.properties} file has been set -->
+    <fail message="Set the funz properties file ${funz.properties} from funz-profile">
+        <condition>
+            <not>
+                <and>
+                    <available file="${funz.properties}" type="file" />
+                </and>
+            </not>
+        </condition>
+    </fail>
+
     <!-- funz core dependent properties -->
     <property file="funz-core.properties"/>
 
@@ -22,18 +33,6 @@
     <taskdef name="if" taskname="if" classname="net.sf.antcontrib.logic.IfTask" classpathref="antcontrib.classpath" />
     <taskdef name="propertycopy" taskname="propertycopy" classname="net.sf.antcontrib.property.PropertyCopy" classpathref="antcontrib.classpath" />
     <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="antcontrib.classpath" />
-   
-        <!-- verify that the ${funz.properties} file has been set -->
-    <fail message="Set the funz properties file ${funz.properties} from funz-profile with a symbolic link in order to set project global configuration:
-          try something like   ln -s ../funz-profile/funz.properties    from the root directory">
-        <condition>
-            <not>
-                <and>
-                    <available file="${funz.properties}" type="file" />
-                </and>
-            </not>
-        </condition>
-    </fail>
 
     <property name="constants.java" location="${src.dir}/org/funz/Constants.java" />
     <property name="constants.tmpl" location="${src.dir}/org/funz/Constants.tmpl" />
@@ -69,14 +68,12 @@
         <delete dir="${doc.dir}" failonerror="false" />
     </target>
 
-    <target name="clean-all" depends="clean-build, clean-dist, clean-doc" >
+    <target name="clean" depends="clean-build, clean-dist, clean-doc" >
         <delete dir="${javadoc.dir}" failonerror="false" />
     </target>
 
     <!-- compilation and distribution -->
-
-    <target name="resource" >
-
+    <target name="resources" >
         <copy file="${constants.tmpl}" tofile="${constants.java}" overwrite="true" />
         <echo message="Version: ${core.version}"/>
         <replace file="${constants.java}" token="__VERSION__" value="${core.version}" />
@@ -85,13 +82,7 @@
         </tstamp>
         <echo message="Build date: ${build.date}"/>
         <replace file="${constants.java}" token="__BUILDATE__" value="${build.date}" />
-        <!--replace file="${constants.java}"
-                                 token="__PROTOCOL__" value="${protocol}"/-->
-        <copy todir="${dist.lib.dir}">
-            <fileset dir="${lib.dir}">
-                <include name="*" />
-            </fileset>
-        </copy>
+        <!--replace file="${constants.java}" token="__PROTOCOL__" value="${protocol}"/-->
     </target>
 
     <target name="compile" description="compile the source ">
@@ -108,12 +99,27 @@
             <classpath path="${build.dir}" />
             <classpath path="${unit.test.jar}" />
         </javac>
+
+        <copy todir="." >
+            <fileset file="${test.resources.dir}/*"/>
+        </copy>
+        <chmod perm="a+x">
+            <fileset dir=".">
+                <include name="*.bat" />
+                <include name="*.sh" />
+            </fileset>
+        </chmod>
     </target>
 
-    <target name="dist" depends="resource,compile" description="generate the distribution">
+    <target name="dist" depends="resources,compile" description="generate the distribution">
         <mkdir dir="${dist.dir}" />
         <mkdir dir="${dist.lib.dir}" />
-        <jar destfile="${dist.lib.dir}/${core.jar.name}">
+        <copy todir="${dist.lib.dir}">
+            <fileset dir="${lib.dir}">
+                <include name="*" />
+            </fileset>
+        </copy>
+        <jar destfile="${dist.lib.dir}/${core.jar}">
             <fileset dir="${build.dir}">
                 <include name="org/funz/**/*.class" />
             </fileset>
@@ -121,7 +127,7 @@
     </target>
 
     <!-- testing the funz client module -->
-    <target name="test" depends="compile-test">
+    <target name="test" depends="compile-test, dist">
         
         <fileset id="tests" dir="${build.dir}" includes="**/*Test.class" />
         <!--property name="tests.p" refid="tests"/>
@@ -139,9 +145,9 @@
                 <echo message="======================================="/>
                 <echo message="============= @{test.class} ============="/>
                 <echo message="========================================="/>
-                <propertyregex property="test.class.name" input="@{test.class}" regexp="\.class" replace="" global="true"  override="true"/>
-                <!--echo message="${test.class.name}"/-->
-                <propertyregex property="test.class.id" input="${test.class.name}" regexp="/" replace="\." global="true"  override="true"/>
+                <propertyregex property="test.class" input="@{test.class}" regexp="\.class" replace="" global="true"  override="true"/>
+                <!--echo message="${test.class}"/-->
+                <propertyregex property="test.class.id" input="${test.class}" regexp="/" replace="\." global="true"  override="true"/>
                 <!--echo message="${test.class.id}"/-->
                 
                 <!--record name="${test.class.id}.txt" action="start" /-->
@@ -236,21 +242,14 @@
     <!-- help -->
     <target name="help" description="display the help on standard output">
         <echo message="********************************" />
-        <echo message="***" />
-        <echo message="***    Funz core" />
-        <echo message="***" />
+        <echo message="          Funz core" />
         <echo message="********************************" />
         <echo />
         <echo message="help                 :   display this help" />
-        <echo />
-        <echo message="clean-all            :   clean everything that can be generated by ant targets" />
-        <echo message="clean-build                :   clean temp directories (./build, ./bin)" />
-        <echo message="clean-dist           :   clean distribution (./dist)" />
-        <echo message="clean-doc            :   clean documentation (./doc)" />
-        <echo />
+        <echo message="clean                :   clean everything that can be generated by ant targets" />
         <echo message="dist                 :   generate a distribution" />
+        <echo message="test                 :   test the distribution" />
         <echo message="doc                  :   generate the code documentation" />
-
     </target>
 
 
