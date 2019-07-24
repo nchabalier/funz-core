@@ -72,12 +72,7 @@
         <delete dir="${javadoc.dir}" failonerror="false" />
     </target>
 
-<<<<<<< HEAD
     <target name="compile" description="compile the source ">
-=======
-    <!-- compilation and distribution -->
-    <target name="resources" >
->>>>>>> daf418600edea68fb1773827ad90b91d68fce987
         <copy file="${constants.tmpl}" tofile="${constants.java}" overwrite="true" />
         <echo message="Version: ${core.version}"/>
         <replace file="${constants.java}" token="__VERSION__" value="${core.version}" />
@@ -87,12 +82,6 @@
         <echo message="Build date: ${build.date}"/>
         <replace file="${constants.java}" token="__BUILDATE__" value="${build.date}" />
         <!--replace file="${constants.java}" token="__PROTOCOL__" value="${protocol}"/-->
-<<<<<<< HEAD
-=======
-    </target>
-
-    <target name="compile" description="compile the source ">
->>>>>>> daf418600edea68fb1773827ad90b91d68fce987
         <mkdir dir="${build.dir}" />
         <javac srcdir="${src.dir}" destdir="${build.dir}" encoding="ISO-8859-1" source="${java.compiler.version}" target="${java.compiler.version}" >
             <classpath refid="root.classpath" />
@@ -118,11 +107,7 @@
         </chmod>
     </target>
 
-<<<<<<< HEAD
     <target name="dist" depends="compile" description="generate the distribution">
-=======
-    <target name="dist" depends="resources,compile" description="generate the distribution">
->>>>>>> daf418600edea68fb1773827ad90b91d68fce987
         <mkdir dir="${dist.dir}" />
         <mkdir dir="${dist.lib.dir}" />
         <copy todir="${dist.lib.dir}">
@@ -151,8 +136,8 @@
         <!--echo message="${tests.list}"/>
         <echo message="================"/-->
         
-        <for list="${tests.list}" param="test.class" delimiter="${line.separator}">
-            <sequential>
+        <for list="${tesoelimiter="${line.separator}">
+            <sequential>o
                 <echo message="@{test.class}"/>
                 <echo message="======================================="/>
                 <echo message="============= @{test.class} ============="/>
