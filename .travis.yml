@@ -36,7 +36,6 @@ install:
   - cd ..
   - git clone https://github.com/Funz/funz-profile
   - cd $WD
-  - ant dist
 
 before_script:
   #- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update          ; fi
@@ -55,8 +54,8 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 before_deploy:
-  - mv dist Funz
-  - zip -r funz-core.zip Funz
+  - ant dist
+  - zip -r funz-core.zip dist/*
   
 deploy:
   provider: releases
