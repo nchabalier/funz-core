@@ -136,8 +136,8 @@
         <!--echo message="${tests.list}"/>
         <echo message="================"/-->
         
-        <for list="${tesoelimiter="${line.separator}">
-            <sequential>o
+        <for list="${tests.list}" param="test.class" delimiter="${line.separator}">
+            <sequential>
                 <echo message="@{test.class}"/>
                 <echo message="======================================="/>
                 <echo message="============= @{test.class} ============="/>
