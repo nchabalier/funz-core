@@ -32,4 +32,5 @@ public interface Protocol {
             IDLE_STATE = "idle",
             PRIVATE_KEY = "to be or not to be?";
     public static final int SOCKET_BUFFER_SIZE = 1024;
+    public static int PING_PERIOD = 5000;
 }
