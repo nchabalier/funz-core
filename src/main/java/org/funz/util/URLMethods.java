@@ -131,12 +131,14 @@ public class URLMethods {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Cannot instanciate class " + interfaceName + ": " + e.getMessage());
+            //e.printStackTrace();
         } finally {
             try {
                 jarIStream.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Cannot close jar " + jarIStream + ": " + e.getMessage());
+                //e.printStackTrace();
             }
         }
         return null;
