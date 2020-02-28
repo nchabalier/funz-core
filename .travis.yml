@@ -30,6 +30,9 @@ matrix:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait brew install ant; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ant -y; fi
+  - echo `java --version`
+  - echo `python -V`
+  - echo `python3 -V`
 
 install:
   - WD=$PWD
