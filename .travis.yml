@@ -40,7 +40,7 @@ install:
 
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -f '/usr/local/include/c++'; travis_wait brew install r; fi
-  - if [[ "$TRAVIS_OSX_IMAGE" == "xcode9" ]]; then brew install python3; fi # to get python3 instead of 2 -> ok.py test working
+  - if [[ "$TRAVIS_OSX_IMAGE" == "xcode9.3" ]]; then brew install python3; fi # to get python3 instead of 2 -> ok.py test working
   - echo `python -V`
   - echo `python3 -V`
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9; fi
