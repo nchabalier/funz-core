@@ -17,7 +17,7 @@ matrix:
         - TRAVIS_DIST_NAME="xenial"
     - name: "MacOS JDK8"
       os: osx
-      osx_image: xcode9.2
+      osx_image: xcode9.3
     - name: "MacOS JDK11"
       os: osx
       osx_image: xcode10.1
@@ -28,7 +28,7 @@ matrix:
 #        - oraclejdk11
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -f '/usr/local/include/c++'; travis_wait brew install ant; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait brew install ant; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ant -y; fi
 
 install:
