@@ -12,7 +12,7 @@ public class Constants
         APP_HOME_PROPERTY = "app.home",
         APP_USER_PROPERTY = "app.user",
         APP_VERSION = "1.9",
-        APP_BUILD_DATE = "09/08/2019 23:22";
+        APP_BUILD_DATE = "05/05/2020 05:20";
 
     public static String APP_NAME = "Funz";
 
