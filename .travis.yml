@@ -81,7 +81,6 @@ before_script:
     fi
 # Install Python if needed
   - >
-    if [[ "$NO_TEST_PYTHON" != "1" ]]; then 
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
     sudo apt-get install python3-numpy python3-pip --allow-unauthenticated ; 
     sudo pip3 install py4j==0.10.8.1; 
@@ -93,26 +92,6 @@ before_script:
     fi; 
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
     choco install -y python;
-    fi; 
-    fi
-# Install rJava if needed
-  - >
-    if [[ "$NO_TEST_R" != "1" ]]; then 
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-    sudo apt-get install libpcre2-8-0 libpcre2-dev --allow-unauthenticated -y;
-    sudo ln -s /usr/lib/jvm/default-java $JAVA_HOME; 
-    sudo R CMD javareconf JAVA_HOME=$JAVA_HOME; 
-    sudo R -e "install.packages('rJava',repos = 'https://cloud.r-project.org')"; 
-    fi; 
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-    export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home;
-    R CMD javareconf JAVA_HOME=$JAVA_HOME; 
-    R -e "install.packages('rJava',repos = 'https://cloud.r-project.org')"; 
-    fi; 
-    if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-    R.exe CMD javareconf JAVA_HOME=$JAVA_HOME; 
-    R.exe -e "install.packages('rJava',repos = 'https://cloud.r-project.org')"; 
-    fi;
     fi
     
 script: 
