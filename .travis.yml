@@ -121,13 +121,11 @@ script:
 after_success:
 # Coverage for reference conf
   - >
-    if [[ "$NO_TEST_JAVA" != "1" ]]; then 
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
     if [[ "$JDK" == "openjdk@1.11" ]]; then 
-    if [[ "$R_SERVER" == "R2js" ]]; then 
     ant coverage;
     bash <(curl -s https://codecov.io/bash);
-    fi; fi; fi; fi
+    fi; fi
 
 before_deploy:
   - ant clean dist
