@@ -174,7 +174,7 @@ public class Process {
             }
 
             ProcessBuilder processBuilder = new ProcessBuilder(split_cmd);
-            if (OS.isFamilyUnix()) {
+            if (OS.isFamilyUnix() || OS.isFamilyMac()) {
                 boolean is_sh = false;
                 if (split_cmd[0].endsWith(".sh") | split_cmd[0].endsWith(".sh\"")) {
                     is_sh = true;
