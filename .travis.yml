@@ -95,7 +95,7 @@ before_script:
     fi
     
 script: 
-  - ant test
+  - travis_wait 40 ant test
 
 after_success:
 # Coverage for reference conf
