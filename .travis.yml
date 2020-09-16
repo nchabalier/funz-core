@@ -1,37 +1,54 @@
-language: java
+language: minimal
+cache:
+  directories:
+    - $HOME/.jabba/
 matrix:
   include:
-    - name: "Linux JDK8"
-      os: linux
-      dist: trusty
-      jdk:
-        - openjdk8
-      env:
-        - TRAVIS_DIST_NAME="trusty"
-    - name: "Linux JDK11"
+    - name: "Linux JDK11 - unit"
       os: linux
       dist: xenial
-      jdk:
-        - openjdk11
       env:
+        - JDK="openjdk@1.11"
         - TRAVIS_DIST_NAME="xenial"
-    - name: "MacOS JDK8"
-      os: osx
-      osx_image: xcode9.3
-    - name: "MacOS JDK11"
+# Vary OS        
+    - name: "MacOS JDK11 - unit"
       os: osx
       osx_image: xcode10.1
-#    - name: "Windows" --- Not yet supported
-#      os: windows
-#      jdk:
-#        - oraclejdk8
-#        - oraclejdk11
+      env:
+        - JDK="openjdk@1.11"
+        - TRAVIS_DIST_NAME="osx10"
+    - name: "Windows JDK11 - unit"
+      os: windows
+      env:
+        - JDK="openjdk@1.11"
+        - TRAVIS_DIST_NAME="win"
+    - name: "Linux JDK8 - unit"
+      os: linux
+      dist: xenial
+      env:
+        - JDK="adopt@1.8"
+        - TRAVIS_DIST_NAME="xenial"
+    - name: "Linux JDK13 - unit"
+      os: linux
+      dist: xenial
+      env:
+        - JDK="openjdk@1.13"
+        - TRAVIS_DIST_NAME="xenial"
 
+        
+env:
+  global:
+    # Convenience variables for shortening commands
+    - GRAVIS_REPO="https://github.com/DanySK/Gravis-CI.git"
+    - GRAVIS="$HOME/gravis"        
+        
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait brew install ant; fi
+  # Check out the script set
+  - travis_retry git clone --depth 1 $GRAVIS_REPO $GRAVIS
+  - source $GRAVIS/install-jdk
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export HOMEBREW_NO_AUTO_UPDATE=1; travis_wait brew update >/dev/null; brew install ant; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install ant -y; fi
-  - echo `java -version`
-
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install ant -y; fi
 install:
   - WD=$PWD
   - cd ..
@@ -39,21 +56,78 @@ install:
   - cd $WD
 
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then rm -f '/usr/local/include/c++'; travis_wait brew install r; fi
-  - if [[ "$TRAVIS_OSX_IMAGE" == "xcode9.3" ]]; then brew uninstall --ignore-dependencies --force python; brew install python3; fi # to get python3 instead of 2 -> ok.py test working
-  - echo `python -V`
-  - echo `python3 -V`
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9; fi
-  - if [[ "$TRAVIS_DIST_NAME" == "trusty" ]]; then echo "deb https://cloud.r-project.org/bin/linux/ubuntu trusty-cran35/" | sudo tee -a /etc/apt/sources.list; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install r-recommended --allow-unauthenticated -y; fi
-
+# Install R anyway
+  - >  
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" | sudo tee -a /etc/apt/sources.list;
+    sudo apt-get update -qq --allow-unauthenticated; 
+    sudo apt-get install r-base --allow-unauthenticated -y; 
+    sudo apt-get install libglu1-mesa-dev libglu1-mesa-dev libfreetype6-dev --allow-unauthenticated -y; 
+    R --version;
+    fi
+  - >
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+    wd=$PWD; 
+    cd /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core; git reset --hard c3a244c627e; git checkout -b r-3.6.3;
+    cd $wd;
+    brew reinstall r;
+    R --version;
+    fi
+  - >
+    if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+    choco install -y r --version 3.6;
+    export PATH=$PATH:"C:\Program Files\R\R-3.6.0\bin";
+    R.exe --version;
+    fi
+# Install Python if needed
+  - >
+    if [[ "$NO_TEST_PYTHON" != "1" ]]; then 
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    sudo apt-get install python3-numpy python3-pip --allow-unauthenticated ; 
+    sudo pip3 install py4j==0.10.8.1; 
+    fi; 
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    brew install python3; 
+    pip3 install numpy; 
+    pip3 install py4j==0.10.8.1;  
+    fi; 
+    if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+    choco install -y python;
+    fi; 
+    fi
+# Install rJava if needed
+  - >
+    if [[ "$NO_TEST_R" != "1" ]]; then 
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    sudo apt-get install libpcre2-8-0 libpcre2-dev --allow-unauthenticated -y;
+    sudo ln -s /usr/lib/jvm/default-java $JAVA_HOME; 
+    sudo R CMD javareconf JAVA_HOME=$JAVA_HOME; 
+    sudo R -e "install.packages('rJava',repos = 'https://cloud.r-project.org')"; 
+    fi; 
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+    export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home;
+    R CMD javareconf JAVA_HOME=$JAVA_HOME; 
+    R -e "install.packages('rJava',repos = 'https://cloud.r-project.org')"; 
+    fi; 
+    if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+    R.exe CMD javareconf JAVA_HOME=$JAVA_HOME; 
+    R.exe -e "install.packages('rJava',repos = 'https://cloud.r-project.org')"; 
+    fi;
+    fi
+    
 script: 
   - ant test
 
 after_success:
-  - ant coverage
-  - bash <(curl -s https://codecov.io/bash)
+# Coverage for reference conf
+  - >
+    if [[ "$NO_TEST_JAVA" != "1" ]]; then 
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    if [[ "$JDK" == "openjdk@1.11" ]]; then 
+    if [[ "$R_SERVER" == "R2js" ]]; then 
+    ant coverage;
+    bash <(curl -s https://codecov.io/bash);
+    fi; fi; fi; fi
 
 before_deploy:
   - ant clean dist
