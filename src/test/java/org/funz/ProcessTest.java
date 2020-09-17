@@ -8,6 +8,7 @@ package org.funz;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import org.apache.commons.exec.OS;
 import org.junit.Test;
 import org.funz.util.Disk;
 import org.funz.util.ParserUtils;
@@ -41,8 +42,7 @@ public class ProcessTest {
             assert false : ex.getMessage();
         }
 
-        assert fail.getFailReason().startsWith("Cannot run program \"ThisIsABadCommand\"") : "Failed to get error:" + fail.getFailReason();
-
+        assert fail.getFailReason().contains("ThisIsABadCommand") : "Failed to get error:" + fail.getFailReason();
     }
 
     @Test
@@ -50,7 +50,7 @@ public class ProcessTest {
         System.err.println("+++++++++++++++++++++++++++++++ testOk");
         org.funz.util.Process ok = new org.funz.util.Process("R CMD BATCH ok.R", new File("tmp"), null);
         try {
-            Disk.copyFile(new File("ok.R"), new File("tmp", "ok.R"));
+            Disk.copyFile(new File("src/test/resources/ok.R"), new File("tmp", "ok.R"));
         } catch (IOException ex) {
             assert false : ex;
         }
@@ -67,7 +67,7 @@ public class ProcessTest {
         System.err.println("+++++++++++++++++++++++++++++++ testUsrBinEnv");
         org.funz.util.Process ok = new org.funz.util.Process("ok.py", new File("tmp"), null);
         try {
-            Disk.copyFile(new File("ok.py"), new File("tmp", "ok.py"));
+            Disk.copyFile(new File("src/test/resources/ok.py"), new File("tmp", "ok.py"));
         } catch (IOException ex) {
             assert false : ex;
         }
@@ -84,7 +84,7 @@ public class ProcessTest {
         System.err.println("+++++++++++++++++++++++++++++++ testUsrBinEnv_Args");
         org.funz.util.Process ok = new org.funz.util.Process("ok.py toto", new File("tmp"), null);
         try {
-            Disk.copyFile(new File("ok.py"), new File("tmp", "ok.py"));
+            Disk.copyFile(new File("src/test/resources/ok.py"), new File("tmp", "ok.py"));
         } catch (IOException ex) {
             assert false : ex;
         }
@@ -99,11 +99,21 @@ public class ProcessTest {
     @Test
     public void testExit1() {
         System.err.println("+++++++++++++++++++++++++++++++ testExit1");
-        org.funz.util.Process fail = new org.funz.util.Process("./exit1.sh", new File("tmp"), null);
-        try {
-            Disk.copyFile(new File("exit1.sh"), new File("tmp", "exit1.sh"));
-        } catch (IOException ex) {
-            assert false : ex;
+        org.funz.util.Process fail = null;
+        if (OS.isFamilyWindows()) {
+            fail = new org.funz.util.Process("exit1.bat", new File("tmp"), null);
+            try {
+                Disk.copyFile(new File("src/test/resources/exit1.bat"), new File("tmp", "exit1.bat"));
+            } catch (IOException ex) {
+                assert false : ex;
+            }
+        } else {
+            fail = new org.funz.util.Process("exit1.sh", new File("tmp"), null);
+            try {
+                Disk.copyFile(new File("src/test/resources/exit1.sh"), new File("tmp", "exit1.sh"));
+            } catch (IOException ex) {
+                assert false : ex;
+            }
         }
         try {
             assert fail.runCommand(System.out, System.err, System.err) == 1 : "Bad return status !=1";
@@ -115,14 +125,25 @@ public class ProcessTest {
     @Test
     public void testCrash() {
         System.err.println("+++++++++++++++++++++++++++++++ testCrash");
-        org.funz.util.Process fail = new org.funz.util.Process("./crash.sh", new File("tmp"), null);
-        try {
-            Disk.copyFile(new File("crash.sh"), new File("tmp", "crash.sh"));
-        } catch (IOException ex) {
-            assert false : ex;
+        org.funz.util.Process fail = null;
+        if (OS.isFamilyWindows()) {
+            fail = new org.funz.util.Process("crash.bat", new File("tmp"), null);
+            try {
+                Disk.copyFile(new File("src/test/resources/crash.bat"), new File("tmp", "crash.bat"));
+            } catch (IOException ex) {
+                assert false : ex;
+            }
+        } else {
+            fail = new org.funz.util.Process("crash.sh", new File("tmp"), null);
+            try {
+                Disk.copyFile(new File("src/test/resources/crash.sh"), new File("tmp", "crash.sh"));
+            } catch (IOException ex) {
+                assert false : ex;
+            }
         }
         try {
-            assert fail.runCommand(System.out, System.err, System.err) == 127 : "Bad return status !=1";
+            int ret = fail.runCommand(System.out, System.err, System.err);
+            assert ret != 0 : "Bad return status == 0";
         } catch (Exception ex) {
             assert false : ex.getMessage();
         }
@@ -142,16 +163,18 @@ public class ProcessTest {
             assert false : ex.getMessage();
         }
 
-        assert ParserUtils.getASCIIFileContent(new File("out1.txt")).equals("1\n") : "Bad out stream:" + ParserUtils.getASCIIFileContent(new File("out1.txt"));
-
+        assert ParserUtils.getASCIIFileContent(new File("out1.txt")).contains("1") : "Bad out stream:" + ParserUtils.getASCIIFileContent(new File("out1.txt"));
     }
 
     @Test
     public void testBashWithArgs() {
         System.err.println("+++++++++++++++++++++++++++++++ testCrash");
+        if (OS.isFamilyWindows()) {
+            return; // Do not test bash for windows
+        }
         org.funz.util.Process bash = new org.funz.util.Process("./mult.sh -0.24995 0.25000000000000006", new File("tmp"), null);
         try {
-            Disk.copyFile(new File("mult.sh"), new File("tmp", "mult.sh"));
+            Disk.copyFile(new File("src/test/resources/mult.sh"), new File("tmp", "mult.sh"));
         } catch (IOException ex) {
             assert false : ex;
         }

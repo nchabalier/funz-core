@@ -206,8 +206,13 @@ public class Process {
                         processBuilder = new ProcessBuilder("/bin/bash", "-c", cat(" ", split_cmd));
                     }
                 }
-            } else if (OS.isFamilyWindows() && (split_cmd[0].endsWith(".bat") | split_cmd[0].endsWith(".bat\""))) {
-                processBuilder = new ProcessBuilder("cmd.exe", "/C", cat(" ", split_cmd));
+            } else if (OS.isFamilyWindows()) {
+                if (split_cmd[0].endsWith(".exe") | split_cmd[0].endsWith(".exe\""))
+                    processBuilder = new ProcessBuilder(cat(" ", split_cmd));
+                else if (split_cmd[0].endsWith(".py") | split_cmd[0].endsWith(".py\""))
+                    processBuilder = new ProcessBuilder("python",cat(" ", split_cmd));
+                else
+                    processBuilder = new ProcessBuilder("cmd.exe", "/C", cat(" ", split_cmd));
             }
             logwriter.println("process: " + processBuilder.command());
             logwriter.flush();
@@ -241,7 +246,7 @@ public class Process {
                 logwriter.flush();
             }
 
-            processBuilder.directory(_dir);
+            processBuilder = processBuilder.directory(_dir);
 
             try {
                 _proc = processBuilder.start();
