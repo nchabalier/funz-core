@@ -162,7 +162,12 @@ public class Process {
             if (_cmd.length() == 0) {
                 throw new IllegalArgumentException("Command to execute is empty.");
             }
-
+            
+            if (OS.isFamilyWindows()) {
+                if (_cmd.contains("/")) {
+                    _cmd = _cmd.replace('/', '\\');
+                }
+            }
             String[] split_cmd = splitSpacesNoQuote(_cmd);
             if (split_cmd[0].startsWith("." + File.separator)) {
                 String path = new java.io.File(".").getCanonicalPath();
@@ -175,44 +180,40 @@ public class Process {
 
             ProcessBuilder processBuilder = new ProcessBuilder(split_cmd);
             if (OS.isFamilyUnix() || OS.isFamilyMac()) {
-                boolean is_sh = false;
-                if (split_cmd[0].endsWith(".sh") | split_cmd[0].endsWith(".sh\"")) {
-                    is_sh = true;
-                }
-                String auto_bin = null;
-                if (!Disk.isBinary(new File(split_cmd[0].replace("\"", "")))) {
-                    auto_bin = ParserUtils.getFirstLineContaining(new File(split_cmd[0].replace("\"", "")), "#!");
-                }
-                if (auto_bin != null) {
-                    is_sh = true;
-                    auto_bin = auto_bin.substring(auto_bin.indexOf("#!") + 2).replace("/usr/bin/env ", "");
-                }
-
-                if (is_sh) {
-                    if (auto_bin != null && !auto_bin.equals("/bin/bash")) {
-                        if (auto_bin.endsWith("python")) {
-                            if (ParserUtils.contains(new File(split_cmd[0].replace("\"", "")), "print ", true)) // python2
-                            {
-                                auto_bin = auto_bin + "2";
-                            } else if (ParserUtils.contains(new File(split_cmd[0].replace("\"", "")), "print(", true)) // python3
-                            {
-                                auto_bin = auto_bin + "3";
+                if (Disk.isBinary(new File(split_cmd[0].replace("\"", "")))) {// binary
+                    processBuilder = new ProcessBuilder(split_cmd);
+                } else if (split_cmd[0].trim().endsWith(".py") | split_cmd[0].trim().endsWith(".py\"")) { // python
+                    String python = "python";
+                    try {
+                        String auto_bin = ParserUtils.getFirstLineContaining(new File(split_cmd[0].replace("\"", "")), "#!");
+                        if (auto_bin != null) {
+                            auto_bin = auto_bin.substring(auto_bin.indexOf("#!") + 2).replace("/usr/bin/env ", "").trim();
+                        }
+                        if (auto_bin != null && auto_bin.startsWith("python")) {
+                            python = auto_bin;
+                        } else {
+                            if (ParserUtils.contains(new File(split_cmd[0].replace("\"", "")), "print ", true)) {// python2
+                                python = "python2";
+                            } else if (ParserUtils.contains(new File(split_cmd[0].replace("\"", "")), "print(", true)) {// python3
+                                python = "python3";
                             }
                         }
-                        List<String> args = new ArrayList(Arrays.asList(split_cmd));
-                        args.add(0, auto_bin);
-                        processBuilder = new ProcessBuilder(args);
-                    } else {
-                        processBuilder = new ProcessBuilder("/bin/bash", "-c", cat(" ", split_cmd));
+                    } catch (Exception e) {
                     }
+                    List<String> args = new ArrayList(Arrays.asList(split_cmd));
+                    args.add(0, python);
+                    processBuilder = new ProcessBuilder(args);
+                } else { // anything else, including .sh files
+                    processBuilder = new ProcessBuilder("/bin/bash", "-c", cat(" ", split_cmd));
                 }
             } else if (OS.isFamilyWindows()) {
-                if (split_cmd[0].endsWith(".exe") | split_cmd[0].endsWith(".exe\""))
-                    processBuilder = new ProcessBuilder(cat(" ", split_cmd));
-                else if (split_cmd[0].endsWith(".py") | split_cmd[0].endsWith(".py\""))
-                    processBuilder = new ProcessBuilder("python",cat(" ", split_cmd));
-                else
+                if (Disk.isBinary(new File(split_cmd[0].replace("\"", ""))) || split_cmd[0].trim().endsWith(".exe") || split_cmd[0].trim().endsWith(".exe\"")) {// binary file
+                    processBuilder = new ProcessBuilder(split_cmd);
+                } else if (split_cmd[0].trim().endsWith(".py") | split_cmd[0].trim().endsWith(".py\"")) {// python
+                    processBuilder = new ProcessBuilder("python", cat(" ", split_cmd));
+                } else {// anything else, including .bat files
                     processBuilder = new ProcessBuilder("cmd.exe", "/C", cat(" ", split_cmd));
+                }
             }
             logwriter.println("process: " + processBuilder.command());
             logwriter.flush();
