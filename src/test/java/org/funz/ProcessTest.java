@@ -80,7 +80,7 @@ public class ProcessTest {
         org.funz.util.Process ok = new org.funz.util.Process("./src/test/resources/ok.py toto", new File("tmp"), null);
         try {
             int r = ok.runCommand(System.out, System.err, System.err);
-            assert r == 0 : "Bad return status !=0 " + r;
+            assert r == 0 : "Bad return status "+r+" !=0 ";
         } catch (Exception ex) {
             assert false : ex.getMessage();
         }

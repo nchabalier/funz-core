@@ -162,7 +162,7 @@ public class Process {
             if (_cmd.length() == 0) {
                 throw new IllegalArgumentException("Command to execute is empty.");
             }
-            
+
             if (OS.isFamilyWindows()) {
                 if (_cmd.contains("/")) {
                     _cmd = _cmd.replace('/', '\\');
@@ -210,7 +210,9 @@ public class Process {
                 if (Disk.isBinary(new File(split_cmd[0].replace("\"", ""))) || split_cmd[0].trim().endsWith(".exe") || split_cmd[0].trim().endsWith(".exe\"")) {// binary file
                     processBuilder = new ProcessBuilder(split_cmd);
                 } else if (split_cmd[0].trim().endsWith(".py") | split_cmd[0].trim().endsWith(".py\"")) {// python
-                    processBuilder = new ProcessBuilder("python", cat(" ", split_cmd));
+                    List<String> args = new ArrayList(Arrays.asList(split_cmd));
+                    args.add(0, "python");
+                    processBuilder = new ProcessBuilder(args);
                 } else {// anything else, including .bat files
                     processBuilder = new ProcessBuilder("cmd.exe", "/C", cat(" ", split_cmd));
                 }
