@@ -48,14 +48,16 @@ public class LogConsole implements LogCollector {
         } else if (severity == SeverityLevel.PANIC) {
             System.out.println("[PANIC]   " + message);
         } else {
-            System.out.println("          "+message);
+            System.out.println("          " + message);
         }
     }
 
     public void resetCollector(boolean sync) {
+        System.out.println("[RESET]  ");
     }
 
     public void close() {
+        System.out.println("[CLOSE]  ");
     }
 
     @Override
