@@ -1,6 +1,7 @@
 package org.funz;
 
 import java.io.File;
+import org.apache.commons.exec.OS;
 import org.junit.Test;
 import org.funz.util.Disk;
 
@@ -36,5 +37,13 @@ public class DiskTest {
         assert Disk.isBinary(java_class) : "bad binary inference";
         File R_src = new File("src/test/resources/branin.R");
         assert !Disk.isBinary(R_src) : "bad binary inference";
+
+        if (OS.isFamilyWindows()) {
+            File cmd = new File("C:\\Windows\\system32\\cmd.exe");
+            assert Disk.isBinary(cmd) : "bad binary inference";
+        } else {
+            File bash = new File("/bin/bash");
+            assert Disk.isBinary(bash) : "bad binary inference";
+        }
     }
 }
