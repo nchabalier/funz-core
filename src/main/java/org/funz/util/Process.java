@@ -231,7 +231,7 @@ public class Process {
                     for (File f : _dir.listFiles()) {
                         for (Object e : env.keySet()) {
                             for (String t : envartag) {
-                                if (!Disk.isBinary(f) && ParserUtils.contains(f, t + e.toString() + t, true)) {
+                                if (!t.equals(e.toString()) && !Disk.isBinary(f) && ParserUtils.contains(f, t + e.toString() + t, true)) {
                                     logwriter.println("Replacing " + e.toString() + " by " + env.get(e).toString() + " found in " + f);
                                     logwriter.flush();
                                     Disk.copyFile(f, new File(_dir, "orig." + f.getName() + ".orig"));
