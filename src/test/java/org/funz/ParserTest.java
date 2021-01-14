@@ -92,4 +92,40 @@ public class ParserTest {
         double[] vals = p.asNumeric1DArray(Parser.getBy(l, 3, 1));
         assert vals[2] == 1000000 : "Failed to get 1000000 in " + l;
     }
+
+    @Test
+    public void testCSV_() {
+        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testCSV1");
+        Parser p = new Parser(new File("src/test/resources/Bilan_auto_U_nat.txt"));
+        List<String> l = p.lines();
+        System.err.println("lines:\n" + l);
+        l = p.CSV(l, "\\|", "   Entr(\\S+)es Cumul(\\S+)es \\(t\\)");
+        assert l != null && l.size() > 3 : "Failed to parse with CSV() " + l;
+        double[] vals = p.asNumeric1DArray(Parser.getBy(l, 3, 1));
+        assert vals[2] == 1000000 : "Failed to get 1000000 in " + l;
+    }
+    
+    @Test
+    public void testCSV0() {
+        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testCSV0");
+        Parser p = new Parser(new File("src/test/resources/Bilan_auto_U_nat.txt"));
+        List<String> l = p.lines();
+        System.err.println("lines:\n" + l);
+        l = p.CSV(l, "\\|", "Ann");
+        assert l != null && l.size() > 3 : "Failed to parse with CSV() " + l;
+        double[] vals = p.asNumeric1DArray(Parser.getBy(l, 3, 1));
+        assert vals[0] == 1998 : "Failed to get 1998 in " + l+" : "+vals[2];
+    }    
+        
+    @Test
+    public void testCSV0_() {
+        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testCSV0");
+        Parser p = new Parser(new File("src/test/resources/Bilan_auto_U_nat.txt"));
+        List<String> l = p.lines();
+        System.err.println("lines:\n" + l);
+        l = p.CSV(l, "\\|", "     Ann");
+        assert l != null && l.size() > 3 : "Failed to parse with CSV() " + l;
+        double[] vals = p.asNumeric1DArray(Parser.getBy(l, 3, 1));
+        assert vals[0] == 1998 : "Failed to get 1998 in " + l+" : "+vals[2];
+    }
 }

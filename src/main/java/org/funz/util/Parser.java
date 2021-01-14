@@ -138,6 +138,12 @@ public class Parser {
                 if (line.matches("(.*)"+title+"(.*)")) {
                     String bef = line.split(title)[0]; //substring(0, line.indexOf(title));
                     i = bef.split(delim).length - 1;
+                    if (bef.matches(".*" + delim + "$")) { //ends with delim, so count one more
+                        i = i + 1;
+                        if (bef.matches(delim + "$")) { // starts with delim and first pos, so add 1 also
+                            i = i + 1;
+                        }
+                    }
                 }
             } else {
                 try {
