@@ -95,9 +95,11 @@ public class Disk {
             case '.':
             case ',':
             case '_':
+            case '`':
             case '!':
             case '?':
             case '&':
+            case '|':
             case '@':
             case '#':
             case '\'':
