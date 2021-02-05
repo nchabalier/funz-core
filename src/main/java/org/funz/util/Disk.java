@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.funz.Protocol;
+import java.nio.charset.Charset;
 
 public class Disk {
 
@@ -89,6 +90,9 @@ public class Disk {
         }
         switch (ch) {
             case ' ':
+            case '\t':
+            case '\r':
+            case '\n':
             case '/':
             case '+':
             case '*':
@@ -123,24 +127,45 @@ public class Disk {
             case '\\':
                 return true;
         }
+        //System.out.println(""+ch+"");
         return false;
     }
 
     public static boolean isBinary(File f) {
+        for (Charset cs: new Charset[]{Charset.forName("UTF-8"),Charset.forName("ISO-8859-1"),Charset.forName("ISO-8859-15")}) {
+            // Consider as binary if no charset get it as ASCII...
+            if (!isBinary(f, cs)) return false;
+        }
+        return true;
+    }
+
+    public static boolean isBinary(File f, Charset inputCharset) {
         boolean isbin = false;
         java.io.InputStream in = null;
 
         try {
             in = new FileInputStream(f);
-            BufferedReader r = new BufferedReader(new InputStreamReader(in));
+            BufferedReader r = new BufferedReader(new InputStreamReader(in, inputCharset));
 
-            int sample = (int) Math.min(255, f.length());
+            int sample = (int) Math.min(1024, f.length());
 
             char[] cc = new char[sample]; //do a peek
             r.read(cc, 0, sample);
 
             double prob_bin = 0;
 
+//            int word_size = 10; // will consider word as binary if >50% chars are binary
+//            for (int i = 0; i < cc.length-word_size; i=i+word_size) {
+//                double bins = 0;
+//                for (int j=0; j<word_size; j++) {
+//                    if (!isStringChar((char) cc[i+j])) bins++;
+//                }
+//                if (bins/word_size > 0.5) {
+//                    String b = ">";
+//                    for (int j=0; j<word_size; j++) b=b+" "+(int)cc[i+j];
+//                    System.err.println(b+"<");
+//                }
+//            }
             for (int i = 0; i < cc.length; i++) {
                 char j = (char) cc[i];
                 if (!isStringChar(j)) {

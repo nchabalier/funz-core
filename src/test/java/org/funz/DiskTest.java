@@ -32,18 +32,26 @@ public class DiskTest {
     @Test
     public void testIsBinary() {
         File java_src = new File("src/main/java/org/funz/util/Disk.java");
-        assert !Disk.isBinary(java_src) : "bad binary inference";
+        System.err.println(java_src);
+        assert !Disk.isBinary(java_src) : "bad binary inference: "+java_src;
         File java_class = new File("build/org/funz/util/Disk.class");
-        assert Disk.isBinary(java_class) : "bad binary inference";
+        System.err.println(java_class);
+        assert Disk.isBinary(java_class) : "bad binary inference: "+java_class;
         File R_src = new File("src/test/resources/branin.R");
-        assert !Disk.isBinary(R_src) : "bad binary inference";
+        System.err.println(R_src);
+        assert !Disk.isBinary(R_src) : "bad binary inference: "+R_src;
+        File castem_src = new File("src/test/resources/out.txt");
+        System.err.println(castem_src);
+        assert !Disk.isBinary(castem_src) : "bad binary inference: "+castem_src;
 
         if (OS.isFamilyWindows()) {
             File cmd = new File("C:\\Windows\\system32\\cmd.exe");
-            assert Disk.isBinary(cmd) : "bad binary inference";
+            System.err.println(cmd);
+            assert Disk.isBinary(cmd) : "bad binary inference: "+cmd;
         } else {
             File bash = new File("/bin/bash");
-            assert Disk.isBinary(bash) : "bad binary inference";
+            System.err.println(bash);
+            assert Disk.isBinary(bash) : "bad binary inference: "+bash;
         }
     }
 }
