@@ -84,6 +84,9 @@ public class Disk {
         if (Character.isLetterOrDigit(ch)) {
             return true;
         }
+        if (Character.isSpaceChar(ch)) {
+            return true;
+        }
         switch (ch) {
             case ' ':
             case '/':
