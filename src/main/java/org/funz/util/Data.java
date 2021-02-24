@@ -39,7 +39,7 @@ public class Data {
     }
 
     public static String asString(Object array) {
-        return asString(array, false, "=");
+        return asString(array, false, ":");
     }
 
     public static String asString(Object array, boolean str_mark, String eq) {
@@ -179,7 +179,7 @@ public class Data {
         for (int i = 0; i < in.length(); i++) {
 //            System.err.println("k: " + k + " v:" + v + " [" + o_sqbracket + " {" + o_bracket);
             char c = in.charAt(i);
-            if (c == '=' && !k2v) {
+            if (c == ':' && !k2v) {
                 k2v = true;
                 c = ' ';
             } else if (c == '[') {

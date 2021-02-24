@@ -120,7 +120,7 @@ public class Format {
     }
 
     public static String MapToJSONString(Map<String, ?> X) {
-        return "{\n" + asString(X, true, " : ")/*sb.toString()*/ + "}";
+        return asString(X, true, " : ");
     }
 
     /*static String JSONify(Object o) {
