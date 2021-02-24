@@ -39,7 +39,7 @@ public class Data {
     }
 
     public static String asString(Object array) {
-        return asString(array, false, ":");
+        return asString(array, true, ":");
     }
 
     public static String asString(Object array, boolean str_mark, String eq) {
