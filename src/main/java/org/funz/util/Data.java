@@ -38,24 +38,24 @@ public class Data {
         return oarray;
     }
 
-    public static String asString(Object array) {
-        return asString(array, true, ":");
+    public static String asString(Object o) {
+        return asString(o, false, "=");
     }
 
-    public static String asString(Object array, boolean str_mark, String eq) {
+    public static String asString(Object o, boolean str_mark, String eq) {
         String str_beg = str_mark ? "" + STR_BEG : "";
         String str_end = str_mark ? "" + STR_END : "";
 
-        if (array == null) {
+        if (o == null) {
             return null;//"" + NUL;
         }
 
-        if (array instanceof Map) {
-            Map map = (Map) array;
+        if (o instanceof Map) {
+            Map map = (Map) o;
             StringBuilder buf = new StringBuilder();
             buf.append(MAP_BEG);
-            for (Object o : map.keySet()) {
-                buf.append(str_beg + o.toString() + str_end + eq + asString(map.get(o), str_mark, eq));
+            for (Object oo : map.keySet()) {
+                buf.append(str_beg + oo.toString() + str_end + eq + asString(map.get(oo), str_mark, eq));
                 buf.append(MAP_SEP);
             }
             if (map.size() > 0) {
@@ -65,23 +65,23 @@ public class Data {
             return buf.toString();
         }
 
-        if (!array.getClass().isArray()) {
+        if (!o.getClass().isArray()) {
             try {
-                Integer.parseInt(array.toString());
-                return array.toString();
+                Integer.parseInt(o.toString());
+                return o.toString();
             } catch (Exception e) {
 
                 try {
-                    Double.parseDouble(array.toString());
-                    return array.toString();
+                    Double.parseDouble(o.toString());
+                    return o.toString();
                 } catch (Exception ee) {
-                    return str_beg + array.toString().replace("\n", "\\n") + str_end;
+                    return str_beg + o.toString().replace("\n", "\\n") + str_end;
                 }
             }
         }
 
         try {
-            int[] cast = (int[]) array;
+            int[] cast = (int[]) o;
             if (cast == null || cast.length == 0) {
                 return "" + ARRAY_BEG + ARRAY_END;
             }
@@ -105,7 +105,7 @@ public class Data {
         }
 
         try {
-            double[] cast = (double[]) array;
+            double[] cast = (double[]) o;
             if (cast == null || cast.length == 0) {
                 return "" + ARRAY_BEG + ARRAY_END;
             }
@@ -130,9 +130,9 @@ public class Data {
 
         Object[] cast = null;
         try {
-            cast = (Object[]) array;
+            cast = (Object[]) o;
         } catch (ClassCastException c) {
-            System.err.println("Cannot cast to (Object[]):" + array);
+            System.err.println("Cannot cast to (Object[]):" + o);
         }
         if (cast == null || cast.length == 0) {
             return "" + ARRAY_BEG + ARRAY_END;
@@ -179,7 +179,7 @@ public class Data {
         for (int i = 0; i < in.length(); i++) {
 //            System.err.println("k: " + k + " v:" + v + " [" + o_sqbracket + " {" + o_bracket);
             char c = in.charAt(i);
-            if (c == ':' && !k2v) {
+            if ((c == ':' || c == '=') && !k2v) { //should support JSON ':' or '='
                 k2v = true;
                 c = ' ';
             } else if (c == '[') {

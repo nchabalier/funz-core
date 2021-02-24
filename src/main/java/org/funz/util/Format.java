@@ -143,7 +143,7 @@ public class Format {
             return "";
         }
 
-        return asString(X, true, " : ").replace("" + MAP_BEG, MAP_BEG + "\n").replace("" + MAP_END, "\n" + MAP_END).replace("" + MAP_SEP, ",\n");
+        return asString(X, true, " : ").replace("" + MAP_BEG, MAP_BEG + "\n").replace("" + MAP_END, "\n" + MAP_END).replace("" + MAP_SEP, MAP_SEP+"\n");
     }
 
     /*public static String MapToXMLString(Map<String, ?> X) {
@@ -159,7 +159,7 @@ public class Format {
     public static String MapToXMLString(Map<String, ?> X, Collection<String> order, boolean xmlheader) {
         StringBuilder sb = new StringBuilder();
         for (String o : order) {
-            String Xo = asString(X.get(o));
+            String Xo = asString(X.get(o),false,"=");
             sb.append("<").append(o).append(">").append(Xo).append("</").append(o).append(">").append("\n");
         }
 
@@ -190,7 +190,7 @@ public class Format {
         StringBuilder sb = new StringBuilder();
         for (String o : order) {
             Object Xo = X.get(o);
-            String sXo = asString(Xo);
+            String sXo = asString(Xo,false,"=");
             if (Xo != null) {
                 if (Xo instanceof Map) {
                     sXo = ArrayMapToXMLString((Map<String, ?>) Xo, false);
@@ -231,7 +231,7 @@ public class Format {
         }
         for (String o : order) {
             if (o != null) {
-                String Xo = asString(X.get(o));
+                String Xo = asString(X.get(o),false,":");
                 sb.append("  * ").append(StringUtils.rightPad(o + ": ", m + 2)).append(Xo).append("\n");
             }
         }
@@ -272,12 +272,12 @@ public class Format {
                 if (X.get(k).getClass().isArray()) {
                     for (int i = 0; i < Array.getLength(X.get(k)); i++) {
                         if (Array.getLength(X.get(k)) > i && Array.get(X.get(k), i) != null) {
-                            m = Math.max(m, asString(Array.get(X.get(k), i)).length());
+                            m = Math.max(m, asString(Array.get(X.get(k), i),false,":").length());
                         }
                     }
                     l = Math.max(l, Array.getLength(X.get(k)));
                 } else {
-                    m = Math.max(m, asString(X.get(k)).length());
+                    m = Math.max(m, asString(X.get(k),false,":").length());
                     l = Math.max(l, 1);
                 }
 
@@ -302,11 +302,11 @@ public class Format {
                     if (X.get(k) != null) {
                         if (X.get(k).getClass().isArray()) {
                             Object Xk = Array.get(X.get(k), i % Array.getLength(X.get(k)));
-                            String s = Xk==null ? ""+Data.NUL:asString(Xk);
+                            String s = Xk==null ? ""+Data.NUL:asString(Xk,false,":");
                             sb.append("| ").append(trimToSize(s.replace('\t', ' '), maxsize.get(k))).append(" ");
                         } else {
                             Object Xk = X.get(k);
-                            String s = Xk==null ? ""+Data.NUL:asString(Xk);
+                            String s = Xk==null ? ""+Data.NUL:asString(Xk,false,":");
                             sb.append("| ").append(trimToSize(s.replace('\t', ' '), maxsize.get(k))).append(" ");
                         }
                     } else {
