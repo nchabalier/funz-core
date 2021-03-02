@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        java: [8]
+        java: [8, 11, 13]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
@@ -67,11 +67,6 @@ jobs:
         files: dist/lib/funz-core*.jar
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#      if: ${{ github.ref == 'refs/heads/master' }}
-#    - uses: actions/upload-artifact@v2
-#      with:
-#        name: Release
-#        path: dist
         
         
         
