@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Funz/funz-core.png)](https://travis-ci.org/Funz/funz-core)
+[![Java CI](https://github.com/Funz/funz-core/actions/workflows/ant.yml/badge.svg)](https://github.com/Funz/funz-core/actions/workflows/ant.yml)
 [![codecov](https://codecov.io/gh/Funz/funz-core/branch/master/graph/badge.svg)](https://codecov.io/gh/Funz/funz-core)
 
 # funz-core
