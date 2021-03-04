@@ -286,7 +286,7 @@ public class Data {
             return asArrayObject(string);
         } else if (string.charAt(0) == MAP_BEG && string.charAt(string.length() - 1) == MAP_END) {
             return asMapObject(string);
-        } else if (string.charAt(0) == STR_BEG && string.charAt(string.length() - 1) == STR_END) {
+        } else if (string.length()>1 && string.charAt(0) == STR_BEG && string.charAt(string.length() - 1) == STR_END) {
             String element = string.substring(1, string.length() - 1);
             //System.err.println(">" + element);
             return element;
