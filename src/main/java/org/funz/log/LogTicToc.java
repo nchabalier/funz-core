@@ -26,10 +26,15 @@ public class LogTicToc {
     public static void toc(String key, LogCollector log) {
         try {
             double toc = Calendar.getInstance().getTimeInMillis();
+            double dt = toc - tic.get(key);
+            String mess = (dt<10 ? 
+            StringUtils.rightPad(key + ":", 100) + "time elapsed= " + ((toc - tic.get(key)) )+ " ms" : 
+            StringUtils.rightPad(key + ":", 100) + "time elapsed= " + ((toc - tic.get(key)) / 1000.0 )+ " s");
+            if (dt < 10)
             if (log != null) {
-                log.logMessage(LogCollector.SeverityLevel.INFO, true, StringUtils.rightPad(key + ":", 100) + "time elapsed= " + (toc - tic.get(key)) / 1000.0);
+                log.logMessage(LogCollector.SeverityLevel.INFO, true, mess);
             } else {
-                System.err.println(StringUtils.rightPad(key + ":", 100) + "time elapsed= " + (toc - tic.get(key)) / 1000.0);
+                System.err.println(mess);
             }
             tic.remove(key);
         } catch (Exception e) {
@@ -40,7 +45,6 @@ public class LogTicToc {
 
     public static void toc(String key) {
         toc(key, console);
-
     }
 
     static long T0 = Calendar.getInstance().getTimeInMillis();
