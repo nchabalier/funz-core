@@ -337,12 +337,12 @@ public class Format {
     }
     
     public static String repeat(int times, String separator, String torepeat) {
-        if (times < 0) {
+        if (times <= 0) {
             return "";
         }
         StringBuilder o = new StringBuilder((separator.length() + torepeat.length()) * times);
         for (int i = 0; i < times; i++) {
-            o.append(separator).append(torepeat);
+            o = o.append(separator).append(torepeat);
         }
 
         return o.substring(separator.length(), o.length());
