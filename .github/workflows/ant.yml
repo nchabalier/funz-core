@@ -57,14 +57,18 @@ jobs:
         cd ..
         git clone https://github.com/Funz/funz-profile
         cd $WD
-    - run: ant clean dist
+    - run: |
+        ant clean dist
+        cd dist; zip -r ../funz-core.zip ./*; cd ..
     - uses: actions/upload-artifact@v2
       with:
         path: dist
     - uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: dist/lib/funz-core*.jar
+        files: |
+          dist/lib/funz-core*.jar
+          funz-*.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
