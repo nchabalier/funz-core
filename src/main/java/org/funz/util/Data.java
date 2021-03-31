@@ -171,6 +171,8 @@ public class Data {
         }
         String in = map_string.substring(1, map_string.length() - 1);
 //        System.err.println("Map: "+in);
+        int o_quote = 0;
+        int o_squote = 0;
         int o_bracket = 0;
         int o_sqbracket = 0;
         String k = "";
@@ -190,9 +192,13 @@ public class Data {
                 o_bracket++;
             } else if (c == '}') {
                 o_bracket--;
+            } else if (c == '"') {
+                o_quote++;
+            } else if (c == '\'') {
+                o_squote++;
             }
 
-            if (o_bracket == 0 && o_sqbracket == 0 && (c == ',' || i == in.length() - 1)) {
+            if (o_bracket == 0 && o_sqbracket == 0 && o_quote % 2 == 0 && o_squote % 2 == 0 && (c == ',' || i == in.length() - 1)) {
                 if (c != ',') {
                     v = v + c;
                 }

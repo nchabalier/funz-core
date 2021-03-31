@@ -27,6 +27,7 @@ public class DataTest {
     Map mNULLarray;
     Map m0array;
     Map marray;
+    Map mcomma;
 
     @Before
     public void setUp() throws Exception {
@@ -59,10 +60,64 @@ public class DataTest {
         mm.put("d", new String[]{"a", "b", "c"});
         mm.put("e", new double[]{0.123, 0.456, 0.789});
         Map m2 = new HashMap();
-        m2.put("i", 123);
+        m2.put("i", 123.0);
         m2.put("j", "abc");
         mm.put("m2", m2);
         System.out.println("mm= " + mm);
+
+        mcomma = new HashMap();
+        mcomma.put("a1", 132.0);
+        mcomma.put("b", "cdef");
+        mcomma.put("bb", "'cdef'");
+        mcomma.put("c", "'1,2,3'");
+        System.out.println("mcomma= " + mcomma);
+    }
+
+    @Test
+    public void testMap() {
+        String mAsString = asString(m);
+        System.out.println("asString(m)= " + mAsString);
+        System.out.println("asObject(asString(m))= " + asObject(mAsString));
+
+        assert asString(asObject(mAsString)).equals(mAsString) : "Inconsistent asString/Object loop: " + asString(asObject(mAsString));
+        //System.err.println(((Object[])((Map)asObject(mAsString)).get("d")).length);
+
+        String mNULLarrayAsString = asString(mNULLarray);
+        System.out.println("asString(mNULLarray)= " + mNULLarrayAsString);
+        System.out.println("asObject(asString(mNULLarray))= " + asObject(mNULLarrayAsString));
+
+        assert asString(asObject(mNULLarrayAsString)).equals(mNULLarrayAsString) : "Inconsistent asString/Object loop: " + asString(asObject(mNULLarrayAsString));
+        //System.err.println(((Object[])((Map)asObject(mAsString)).get("d")).length);
+
+        String m0arrayAsString = asString(m0array);
+        System.out.println("asString(m0array)= " + m0arrayAsString);
+        System.out.println("asObject(asString(m0array))= " + asObject(m0arrayAsString));
+
+        assert asString(asObject(m0arrayAsString)).equals(m0arrayAsString) : "Inconsistent asString/Object loop: " + asString(asObject(m0arrayAsString));
+        //System.err.println(((Object[])((Map)asObject(mAsString)).get("d")).length);
+
+
+        String marrayAsString = asString(marray);
+        System.out.println("asString(marray)= " + marrayAsString);
+        System.out.println("asObject(asString(marray))= " + asObject(marrayAsString));
+
+        assert asString(asObject(marrayAsString)).equals(marrayAsString) : "Inconsistent asString/Object loop: " + asString(asObject(marrayAsString));
+        //System.err.println(((Object[])((Map)asObject(mAsString)).get("d")).length);
+
+        String mmAsString = asString(mm);
+        System.out.println("asString(mm)= " + mmAsString);
+        System.out.println("asObject(asString(mm))= " + asObject(mmAsString));
+
+        assert asString(asObject(mmAsString)).equals(mmAsString) : "Inconsistent asString/Object loop: " + asString(asObject(mmAsString));
+        //System.err.println(((Object[])((Map)asObject(mAsString)).get("d")).length);
+
+
+        String mcommaAsString = asString(mcomma);
+        System.out.println("asString(mcomma)= " + mcommaAsString);
+        System.out.println("asObject(asString(mcomma))= " + asObject(mcommaAsString));
+
+        assert asString(asObject(mcommaAsString)).equals(mcommaAsString) : "Inconsistent asString/Object loop: " + asString(asObject(mcommaAsString));
+        //System.err.println(((Object[])((Map)asObject(mAsString)).get("d")).length);
 
     }
 
