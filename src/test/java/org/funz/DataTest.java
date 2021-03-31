@@ -3,6 +3,10 @@ package org.funz;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.funz.util.Data;
+import org.funz.util.Format;
 import org.junit.Before;
 import org.junit.Test;
 import static org.funz.util.Data.asObject;
@@ -119,6 +123,15 @@ public class DataTest {
         assert asString(asObject(mcommaAsString)).equals(mcommaAsString) : "Inconsistent asString/Object loop: " + asString(asObject(mcommaAsString));
         //System.err.println(((Object[])((Map)asObject(mAsString)).get("d")).length);
 
+        //String modelx = "{\"x1\":\"Unif(10,20)\",\"x2\":\"Norm(0,1)\"}";
+        String modelx = "{&quot;x1&quot;:&quot;Unif(10,20)&quot;,&quot;x2&quot;:&quot;Norm(0,1)&quot;}";
+        final Map<Object, Object> asMapObject = Data.asMapObject(Format.fromHTML(modelx));
+        Map<String, String> map_modelx = asMapObject.entrySet().stream().collect(
+            Collectors.toMap(
+                e -> e.getKey().toString().replace("\"", ""), 
+                e -> e.getValue().toString()));
+
+        assert asString(map_modelx,true,":").equals(modelx) : "Inconsistent asString/Object loop: " + asString(map_modelx,true,":");
     }
 
     @Test
