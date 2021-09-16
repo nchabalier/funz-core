@@ -118,7 +118,7 @@ public class URLMethods {
                                     //System.err.println("Class " + clsRef.getName() + " is usable.");
                                     return o;
                                 } catch (InstantiationException ie) {
-                                    //System.err.println("Class " + clsRef.getName() + " is abstract.");
+                                    System.err.println("Class " + clsRef.getName() + " could not be instanciated.");
                                     //ie.printStackTrace();
                                 }
                             }
