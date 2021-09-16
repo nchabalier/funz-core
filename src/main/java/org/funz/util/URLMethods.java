@@ -87,6 +87,8 @@ public class URLMethods {
         //System.err.println("jar: " + jarurl + " / " + interfaceName);
         JarInputStream jarIStream = null;
         try {
+            if (!jarurl.contains(":"))
+                jarurl="file:"+jarurl; //should solve when missing protocol
 
             URL url = new URL(jarurl);
             OpenURLClassLoader ucl = new OpenURLClassLoader(new URL[]{new URL("jar:" + jarurl + "!/")}, URLMethods.class.getClassLoader());
