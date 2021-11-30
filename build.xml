@@ -112,6 +112,10 @@
                 <include name="org/funz/**/*.class" />
                 <exclude name="org/funz/**/*Test.class" />
             </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/funz/**/*.java" />
+                <exclude name="org/funz/**/*Test.java" />
+            </fileset>
         </jar>
     </target>
 
