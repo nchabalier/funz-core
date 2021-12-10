@@ -1355,7 +1355,7 @@ public class Parser {
     }
 
     /**
-     * wrapp String in float
+     * wrap String in float
      *
      * @param line String
      * @return floating number read, NaN if impossible to parse
@@ -1380,7 +1380,7 @@ public class Parser {
     }
 
     /**
-     * wrapp String in float array
+     * wrap String in float array
      *
      * @param line String
      * @param delim String to separate values
@@ -1404,7 +1404,7 @@ public class Parser {
     }
 
     /**
-     * wrapp String in 2D float array
+     * wrap String in 2D float array
      *
      * @param line String
      * @param coldelim String to separate columns
@@ -1458,4 +1458,15 @@ public class Parser {
      return new Matrix(asDouble2DArray( lines))
      }*/
 
+    public static String asString(Object o) {
+       return Data.asString(o);
+    }
+    
+    public static String toString(List o) {
+        return o.toString();
+    }
+    
+    public static String toString(Object o) {
+        return o.toString();
+    }
 }
