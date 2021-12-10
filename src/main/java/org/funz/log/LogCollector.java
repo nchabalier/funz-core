@@ -8,6 +8,9 @@ public interface LogCollector {
       
         /// simple infomation
         INFO,
+
+        /// say it
+        OUTPUT,
        
         /// critical message or exception
         PANIC,
