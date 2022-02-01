@@ -10,10 +10,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +27,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.math.io.parser.ArrayString;
 import static org.funz.util.ASCII.CHARSET;
 import static org.funz.util.ASCII.InputStreamToString;
@@ -130,30 +135,51 @@ public class Parser {
      }
      }
      }*/
-    public static List<String> CSV(List<String> lines, String delim, String title) {
+    public static List<String> CSV(List<String> lines, String coldelim, String column) {
         LinkedList<String> p = new LinkedList<String>();
         int i = -1;
         for (String line : lines) {
             if (i == -1) {
-                if (line.matches("(.*)"+title+"(.*)")) {
-                    String bef = line.split(title)[0]; //substring(0, line.indexOf(title));
-                    i = bef.split(delim).length - 1;
-                    if (bef.matches(".*" + delim + "$")) { //ends with delim, so count one more
+                if (line.matches("(.*)"+column+"(.*)")) {
+                    String bef = line.split(column)[0]; //substring(0, line.indexOf(title));
+                    i = bef.split(coldelim).length - 1;
+                    if (bef.matches(".*" + coldelim + "$")) { //ends with delim, so count one more
                         i = i + 1;
-                        if (bef.matches(delim + "$")) { // starts with delim and first pos, so add 1 also
+                        if (bef.matches(coldelim + "$")) { // starts with delim and first pos, so add 1 also
                             i = i + 1;
                         }
                     }
                 }
             } else {
                 try {
-                    p.add(line.split(delim)[i]);
+                    p.add(line.split(coldelim)[i]);
                 } catch (Exception e) {
                     //Nothing to do
                 }
             }
         }
         return p;
+    }
+    public List<String> CSV(String filefilter, String coldelim, String column) {
+        return CSV( lines(filefilter),coldelim, column);
+    }
+
+    public static Map<String,double[]> CSV(List<String> lines, String coldelim) {
+        String[] titles = lines.get(0).split(coldelim);
+        double[][] values = new double[titles.length][lines.size()-1];
+        for (int j = 0; j < lines.size()-1; j++) {
+            System.err.println(lines.get(j+1));
+            String[] line_vals = lines.get(j+1).split(coldelim);
+            if (line_vals!=null && line_vals.length==titles.length)
+            for (int i = 0; i < titles.length; i++) {
+                values[i][j] = asNumeric(line_vals[i]);
+            }
+        }
+        Map m = new HashMap<>(titles.length);
+        for (int i = 0; i < titles.length; i++) {
+            m.put(titles[i].trim(), values[i]);
+        }
+        return m;
     }
 
     public List<String> JSONPath(String filefilter, String path) {
@@ -1229,6 +1255,31 @@ public class Parser {
             p.add(lines.get(i - 1));
         }
         return p;
+    }
+
+    public static List<String> head(List<String> lines, int l) {
+        l = Math.min(l,lines.size());
+        List<String> h = new ArrayList<>(l);
+        for (int i = 0; i < l; i++) {
+            h.add(lines.get(i));
+        }
+        return h;
+    }
+
+    public static List<String> tail(List<String> lines, int l) {
+        l = Math.min(l,lines.size());
+        List<String> t = new ArrayList<>(l);
+        for (int i = lines.size()-l; i < lines.size(); i++) {
+            t.add(lines.get(i));
+        }
+        return t;
+    }
+
+    public static List<String> skip(List<String> lines, int skip) {
+        for (int i = 0; i < skip; i++) {
+            lines.remove(0);
+        }
+        return lines;
     }
 
     public static List<String> getAfter(List<String> lines, int after, int... numbers) {

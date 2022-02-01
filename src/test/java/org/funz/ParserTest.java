@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.junit.Test;
@@ -27,6 +28,7 @@ public class ParserTest {
     public void testManyGrep() throws InterruptedException {
         System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testManyGrep");
         File src = new File("src/main/java/org/funz/util/Parser.java");
+        assert src.isFile() : "Cannot find "+src;
 
         for (int i = 0; i < 10; i++) {
             Thread.sleep(50);
@@ -95,7 +97,7 @@ public class ParserTest {
 
     @Test
     public void testCSV_() {
-        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testCSV1");
+        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testCSV_");
         Parser p = new Parser(new File("src/test/resources/Bilan_auto_U_nat.txt"));
         List<String> l = p.lines();
         System.err.println("lines:\n" + l);
@@ -114,18 +116,31 @@ public class ParserTest {
         l = p.CSV(l, "\\|", "Ann");
         assert l != null && l.size() > 3 : "Failed to parse with CSV() " + l;
         double[] vals = p.asNumeric1DArray(Parser.getBy(l, 3, 1));
-        assert vals[0] == 1998 : "Failed to get 1998 in " + l+" : "+vals[2];
+        assert vals[0] == 1998 : "Failed to get 1998 in " + l+" : "+vals[0];
     }    
         
     @Test
     public void testCSV0_() {
-        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testCSV0");
+        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testCSV0_");
         Parser p = new Parser(new File("src/test/resources/Bilan_auto_U_nat.txt"));
         List<String> l = p.lines();
         System.err.println("lines:\n" + l);
         l = p.CSV(l, "\\|", "     Ann");
         assert l != null && l.size() > 3 : "Failed to parse with CSV() " + l;
         double[] vals = p.asNumeric1DArray(Parser.getBy(l, 3, 1));
-        assert vals[0] == 1998 : "Failed to get 1998 in " + l+" : "+vals[2];
+        assert vals[0] == 1998 : "Failed to get 1998 in " + l+" : "+vals[0];
+    }
+
+    @Test
+    public void testCSVMap() {
+        System.err.println("+++++++++++++++++++++++++++++++++++++++++++++ testCSVMap");
+        Parser p = new Parser(new File("src/test/resources/Bilan_auto_U_nat.txt"));
+        List<String> l = Parser.skip(p.lines(),7);
+        System.err.println("lines:\n" + l);
+        Map<String,double[]> m = p.CSV(l, "\\|");
+        assert m != null && m.size() > 3 : "Failed to parse with CSV() " + m;
+        Object k0 = m.keySet().toArray()[1];
+        double[] vals = m.get(k0);
+        assert vals[2] == 1998.0 : "Failed to get 1998 in " + m+" : "+vals[2] ;
     }
 }
