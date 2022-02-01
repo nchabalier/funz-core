@@ -929,8 +929,8 @@ public class Parser {
         if (end < 0) {
             end = 0;
         }
-        if (end > line.length()-1) {
-            end = line.length()-1;
+        if (end > line.length()) {
+            end = line.length();
         }
         if (begin > end) {
             begin = end;
@@ -1182,7 +1182,7 @@ public class Parser {
     public static String before(String line, String endstr) {
         int end = line.indexOf(endstr);
         if (end == -1) {
-            end = line.length() - 1;
+            end = line.length();
         }
         return substring(line, 0, end);
     }
