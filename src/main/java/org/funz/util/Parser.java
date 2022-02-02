@@ -181,6 +181,9 @@ public class Parser {
         }
         return m;
     }
+    public Map<String,double[]> CSV(String filefilter, String coldelim) {
+        return CSV( lines(filefilter),coldelim);
+    }
 
     public List<String> JSONPath(String filefilter, String path) {
         LinkedList<String> p = new LinkedList<String>();
