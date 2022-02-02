@@ -870,6 +870,36 @@ public class Parser {
     }
 
     /**
+     * remove (any) quote, ...
+     *
+     * @param line String to clean
+     * @return line without quotes at end or begining
+     */
+    public static String unquote(String line) {
+        if (line == null) {
+            return null;
+        }
+        line=line.trim();
+        if (line.charAt(0)=='"' && line.charAt(line.length()-1)=='"') return line.substring(1,line.length()-1);
+        if (line.charAt(0)=='\'' && line.charAt(line.length()-1)=='\'') return line.substring(1,line.length()-1);
+        return line;
+    }
+
+    /**
+     * remove (any) quote, ...
+     *
+     * @param lines list of String to clean
+     * @return list of lines without quotes at end or begining
+     */
+    public static List<String> unquote(List<String> lines) {
+        LinkedList<String> p = new LinkedList<String>();
+        for (String line : lines) {
+            p.add(unquote(line));
+        }
+        return p;
+    }
+
+    /**
      * split a line in several parts
      *
      * @param line String to split
