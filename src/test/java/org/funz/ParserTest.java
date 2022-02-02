@@ -140,7 +140,7 @@ public class ParserTest {
         Map<String,double[]> m = p.CSV(l, "\\|");
         assert m != null && m.size() > 3 : "Failed to parse with CSV() " + m;
         System.err.println("m.keySet(): "+m.keySet());
-        Object k0 = m.keySet().toArray()[1];
+        Object k0 = "AnnÃ©e";
         double[] vals = m.get(k0);
         assert vals[2] == 1998.0 : "Failed to get 1998 in " + m+" : "+vals[2] ;
     }
