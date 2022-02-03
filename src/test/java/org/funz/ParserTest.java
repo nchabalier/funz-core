@@ -140,7 +140,7 @@ public class ParserTest {
         Map<String,double[]> m = p.CSV(l, "\\|");
         assert m != null && m.size() > 3 : "Failed to parse with CSV() " + m;
         System.err.println("m.keySet(): "+m.keySet());
-        Object k0 = "Année";
+        Object k0 = "Annee";
         assert m.containsKey(k0) : "m has no " + k0 + " in keys: "+m.keySet() ;
         double[] vals = m.get(k0);
         assert vals!= null : "Empty values for key " + k0;

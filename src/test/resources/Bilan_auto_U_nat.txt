@@ -5,7 +5,7 @@
             Valeurs Brutes : 
  ________________________________________________________________________________________________________________________________________________________
 |                |                           |                          |                           |                          |                         |
-|     Année      |   Entrées Annuelles (t)   |   Entrées Cumulées (t)   |   Sorties Annuelles (t)   |   Sorties Cumulées (t)   |   Entree - Sortie (t)   |
+|     Annee      |   Entrees Annuelles (t)   |   Entrees Cumulees (t)   |   Sorties Annuelles (t)   |   Sorties Cumulees (t)   |   Entree - Sortie (t)   |
 |________________|___________________________|__________________________|___________________________|__________________________|_________________________|
 |                |                           |                          |                           |                          |                         |
 |      1998      |         0.000E00          |         1.000E06         |         3.205E02          |         3.205E02         |        9.997E05         |
@@ -72,11 +72,11 @@
 
 
              Valeurs Moyennes : 
-                    Delta Négatif : 5
+                    Delta Negatif : 5
                     Delta Positif : 5
  ________________________________________________________________________________________________________________________________________________________
 |                |                           |                          |                           |                          |                         |
-|     Année      |   Entrées Annuelles (t)   |   Entrées Cumulées (t)   |   Sorties Annuelles (t)   |   Sorties Cumulées (t)   |   Entree - Sortie (t)   |
+|     Annee      |   Entrees Annuelles (t)   |   Entrees Cumulees (t)   |   Sorties Annuelles (t)   |   Sorties Cumulees (t)   |   Entree - Sortie (t)   |
 |________________|___________________________|__________________________|___________________________|__________________________|_________________________|
 |                |                           |                          |                           |                          |                         |
 |      1998      |         0.000E00          |         1.000E06         |         3.693E03          |         1.131E04         |        9.887E05         |
