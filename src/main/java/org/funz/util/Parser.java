@@ -168,7 +168,6 @@ public class Parser {
         String[] titles = lines.get(0).split(coldelim);
         double[][] values = new double[titles.length][lines.size()-1];
         for (int j = 0; j < lines.size()-1; j++) {
-            System.err.println(lines.get(j+1));
             String[] line_vals = lines.get(j+1).split(coldelim);
             if (line_vals!=null && line_vals.length==titles.length)
             for (int i = 0; i < titles.length; i++) {
