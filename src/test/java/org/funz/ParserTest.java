@@ -141,7 +141,9 @@ public class ParserTest {
         assert m != null && m.size() > 3 : "Failed to parse with CSV() " + m;
         System.err.println("m.keySet(): "+m.keySet());
         Object k0 = "Année";
+        assert m.containsKey(k0) : "m has no " + k0 + " in keys: "+m.keySet() ;
         double[] vals = m.get(k0);
+        assert vals!= null : "Empty values for key " + k0;
         assert vals[2] == 1998.0 : "Failed to get 1998 in " + m+" : "+vals[2] ;
     }
 
