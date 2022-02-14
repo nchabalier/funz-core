@@ -1541,8 +1541,12 @@ public class Parser {
      return new Matrix(asDouble2DArray( lines))
      }*/
 
+    public static String asString(HashMap o) {
+        return Data.asString(o);
+    }
+
     public static String asString(Object o) {
-       return Data.asString(o);
+        return Data.asString(o);
     }
     
     public static String toString(List o) {
