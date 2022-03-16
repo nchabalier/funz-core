@@ -952,11 +952,11 @@ public class Parser {
      * @return line cut
      */
     public static String substring(String line, int begin, int end) {
-        if (begin < 0) {
-            begin = 0;
-        }
         if (begin > line.length()-1) {
             begin = line.length()-1;
+        }
+        if (begin < 0) {
+            begin = 0;
         }
         if (end < 0) {
             end = 0;
