@@ -1,44 +1,28 @@
 package org.funz.util;
 
 import com.jayway.jsonpath.JsonPath;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
-import org.apache.commons.io.filefilter.FileFileFilter;
 import org.math.io.parser.ArrayString;
-import static org.funz.util.ASCII.CHARSET;
-import static org.funz.util.ASCII.InputStreamToString;
-import static org.funz.util.ASCII.saveFile;
-import static org.funz.util.Data.asString;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import static org.funz.util.ASCII.*;
 
 /**
  * Conveninence methods to emulate ParserUtils parsing functions like grep, cut,
@@ -529,6 +513,240 @@ public class Parser {
         return lines;
     }
 
+    /**
+     * find String in ParserUtils files matching given file name regexp
+     *
+     * @param filefilter filename filter regexp
+     * (http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html)
+     * @param keyfilter String to find
+     * @return list of lines taken from selected files
+     */
+    public List<String> grep_basic(String filefilter, String keyfilter) {
+        LinkedList<String> p = new LinkedList<String>();
+        List<File> fs = find(filefilter);
+        if (fs.size() == 0) {
+            return p;
+        }
+        for (File f : fs) {
+            p.addAll(grep_basic(f, keyfilter));
+        }
+        return p;
+    }
+
+    /**
+     * find String in ParserUtils file
+     *
+     * @param file ParserUtils file to read
+     * @param keyfilter String to find
+     * @return lines taken in file
+     */
+    public static List<String> grep_basic(File file, String keyfilter) {
+        if (!file.isFile()) {
+            return null;
+        }
+        java.io.BufferedReader inn = null;
+        InputStreamReader isr = null;
+        FileInputStream fis = null;
+        List<String> ret = null;
+        try {
+            fis = new FileInputStream(file);
+            isr = new InputStreamReader(fis, CHARSET);
+            inn = new BufferedReader(isr);
+            ret = grep_basic(inn, keyfilter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fis.close();
+                isr.close();
+                inn.close();
+            } catch (Exception ee) {
+                ee.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * find String in buffer
+     *
+     * @param inn buffer to read
+     * @param keyfilter String to find
+     * @param linesAfter selecting the line 'number of lines after the regex match'
+     * @return lines taken in file
+     */
+    public static List<String> grep_after(BufferedReader inn, String keyfilter, int linesAfter) {
+        if (keyfilter.contains("(") || keyfilter.contains(")") || keyfilter.contains("{") || keyfilter.contains("}") || keyfilter.contains("+") || keyfilter.contains("?") || keyfilter.contains("*") || keyfilter.contains("$") || keyfilter.contains("^") || keyfilter.contains("|") || keyfilter.contains(".") || keyfilter.contains("\\")) {
+            LinkedList<String> lines = new LinkedList<String>();
+            String tmp;
+            Matcher m;
+            Pattern p = Pattern.compile(ANY + keyfilter + ANY);
+            try {
+                int line = 0;
+                Set<Integer> linesIdxToAdd = new HashSet<>();
+                while ((tmp = inn.readLine()) != null) {
+                    m = p.matcher(tmp);
+                    if (m.find()) {
+                        linesIdxToAdd.add(line+linesAfter);
+                    }
+                    if(linesIdxToAdd.contains(line)) {
+                        lines.add(tmp);
+                        linesIdxToAdd.remove(line);
+                    }
+                    line++;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return lines;
+        } else {
+            return grep_basic_after(inn, keyfilter, linesAfter);
+        }
+    }
+
+    /**
+     * find String in ParserUtils files matching given file name regexp
+     *
+     * @param filefilter filename filter regexp
+     * (http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html)
+     * @param keyfilter String to find
+     * @param linesAfter selecting the line 'number of lines after the regex match'
+     * @return list of lines taken from selected files
+     */
+    public List<String> grep_after(String filefilter, String keyfilter, int linesAfter) {
+        LinkedList<String> p = new LinkedList<String>();
+        List<File> fs = find(filefilter);
+        if (fs.size() == 0) {
+            return p;
+        }
+        for (File f : fs) {
+            p.addAll(grep_after(f, keyfilter, linesAfter));
+        }
+        return p;
+    }
+
+    /**
+     * find String in ParserUtils file
+     *
+     * @param file ParserUtils file to read
+     * @param keyfilter String to find
+     * @param linesAfter selecting the line 'number of lines after the regex match'
+     * @return lines taken in file
+     */
+    public static List<String> grep_after(File file, String keyfilter, int linesAfter) {
+        if (!file.isFile()) {
+            return null;
+        }
+        java.io.BufferedReader inn = null;
+        InputStreamReader isr = null;
+        FileInputStream fis = null;
+        List<String> ret = null;
+        try {
+            fis = new FileInputStream(file);
+            isr = new InputStreamReader(fis, CHARSET);
+            inn = new BufferedReader(isr);
+            ret = grep_after(inn, keyfilter, linesAfter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fis.close();
+                isr.close();
+                inn.close();
+            } catch (Exception ee) {
+                ee.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
+
+    /**
+     * find String in buffer
+     *
+     * @param inn buffer to read
+     * @param keyfilter String to find, not a regexp
+     * @param linesAfter selecting the line 'number of lines after the regex match'
+     * @return lines taken in file
+     */
+    public static List<String> grep_basic_after(BufferedReader inn, String keyfilter, int linesAfter) {
+        LinkedList<String> lines = new LinkedList<String>();
+        String tmp;
+        Set<Integer> linesIdxToAdd = new HashSet<>();
+        try {
+            int line = 0;
+            while ((tmp = inn.readLine()) != null) {
+                if (tmp.contains(keyfilter)) {
+                    linesIdxToAdd.add(line+linesAfter);
+                }
+                if(linesIdxToAdd.contains(line)) {
+                    lines.add(tmp);
+                    linesIdxToAdd.remove(line);
+                }
+                line++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lines;
+    }
+
+    /**
+     * find String in ParserUtils files matching given file name regexp
+     *
+     * @param filefilter filename filter regexp
+     * (http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html)
+     * @param keyfilter String to find
+     * @param linesAfter selecting the line 'number of lines after the regex match'
+     * @return list of lines taken from selected files
+     */
+    public List<String> grep_basic_after(String filefilter, String keyfilter, int linesAfter) {
+        LinkedList<String> p = new LinkedList<String>();
+        List<File> fs = find(filefilter);
+        if (fs.size() == 0) {
+            return p;
+        }
+        for (File f : fs) {
+            p.addAll(grep_basic_after(f, keyfilter, linesAfter));
+        }
+        return p;
+    }
+
+    /**
+     * find String in ParserUtils file
+     *
+     * @param file ParserUtils file to read
+     * @param keyfilter String to find
+     * @param linesAfter selecting the line 'number of lines after the regex match'
+     * @return lines taken in file
+     */
+    public static List<String> grep_basic_after(File file, String keyfilter, int linesAfter) {
+        if (!file.isFile()) {
+            return null;
+        }
+        java.io.BufferedReader inn = null;
+        InputStreamReader isr = null;
+        FileInputStream fis = null;
+        List<String> ret = null;
+        try {
+            fis = new FileInputStream(file);
+            isr = new InputStreamReader(fis, CHARSET);
+            inn = new BufferedReader(isr);
+            ret = grep_basic_after(inn, keyfilter, linesAfter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fis.close();
+                isr.close();
+                inn.close();
+            } catch (Exception ee) {
+                ee.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
     public static List<String> gnotrep(BufferedReader inn, String keyfilter) {
         return grep_basic(inn, keyfilter);
     }
@@ -636,7 +854,7 @@ public class Parser {
     /**
      * test if String is in String
      *
-     * @param inn buffer to read
+     * @param input buffer to read
      * @param keyfilter String to find
      * @return keyfilter found in file
      */
@@ -1009,7 +1227,7 @@ public class Parser {
     /**
      * get part of a several Strings
      *
-     * @param line String to cut
+     * @param lines String to cut
      * @param beginstr first chars to keep
      * @param endstr first chars to reject
      * @return lines cut
