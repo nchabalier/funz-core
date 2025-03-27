@@ -1789,4 +1789,16 @@ public class Parser {
     public static String toString(Object o) {
         return o.toString();
     }
+
+    public static String concatString(Object o1, Object o2) {
+        return o1.toString()+o2.toString();
+    }
+
+    public static String concatString(String string1, String string2) {
+        return string1+string2;
+    }
+
+    public static int doubleToInt(double d) {
+        return (int)d;
+    }
 }
