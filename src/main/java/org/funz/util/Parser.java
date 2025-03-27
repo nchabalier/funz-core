@@ -1655,6 +1655,14 @@ public class Parser {
         return dt;
     }
 
+    public static double asNumeric(boolean boolValue) {
+        return boolValue ? 1.0 : 0.0;
+    }
+
+    public static double asNumeric(Boolean boolValue) {
+        return boolValue ? 1.0 : 0.0;
+    }
+
     /**
      * wrap String in float
      *
@@ -1665,8 +1673,15 @@ public class Parser {
         double value = Double.NaN;
         if (line != null) {
             try {
+                // Attempt to parse as a double first
                 value = Double.parseDouble(line);
             } catch (NumberFormatException nfe) {
+                // If parsing fails, check if the string is a boolean representation
+                if ("true".equalsIgnoreCase(line)) {
+                    value = 1.0;
+                } else if ("false".equalsIgnoreCase(line)) {
+                    value = 0.0;
+                }
             }
         }
         return value;
