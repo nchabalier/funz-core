@@ -3,11 +3,13 @@ package org.funz.util;
 import com.jayway.jsonpath.JsonPath;
 import org.math.io.parser.ArrayString;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -1507,6 +1509,24 @@ public class Parser {
         return p;
     }
 
+
+    /**
+     * get element of a list of Strings
+     *
+     * @param lines list of String
+     * @param i index of element to get (0 means last, 1 means first)
+     * @return String element to get
+     */
+    public static String get(ArrayList lines, int i) {
+        if (lines == null || lines.size() == 0) {
+            return null;
+        }
+        if (i <= 0) {
+            i = lines.size() + i;
+        }
+        return (String) lines.get(i - 1);
+    }
+
     public static List<String> head(List<String> lines, int l) {
         l = Math.min(l,lines.size());
         List<String> h = new ArrayList<>(l);
@@ -1801,4 +1821,81 @@ public class Parser {
     public static int doubleToInt(double d) {
         return (int)d;
     }
+
+    /**
+     * Returns a string based on a condition.
+     *
+     * @param condition the boolean condition
+     * @param trueString the string to return if the condition is true
+     * @param falseString the string to return if the condition is false
+     * @return the trueString if condition is true, otherwise the falseString
+     */
+    public static String returnIf(Boolean condition, String trueString, String falseString) {
+        if (condition) {
+            return trueString;
+        } else {
+            return falseString;
+        }
+    }
+
+    public List<String> extractMinValues(String filefilter, String parentXpath, String valueXPath, String minXPath) {
+        LinkedList<String> p = new LinkedList<String>();
+        List<File> fs = find(filefilter);
+        if (fs.size() == 0) {
+            return p;
+        }
+        for (File f : fs) {
+            // Work only for one file
+            return extractMinValues(f, parentXpath, valueXPath, minXPath);
+        }
+        return p;
+    }
+
+    public static List<String> extractMinValues(
+            File file,
+            String parentXpath,
+            String valueXPath,
+            String minXPath
+    ) {
+        List<String> bestResult = new ArrayList<>();
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(file);
+
+            XPath xPath = XPathFactory.newInstance().newXPath();
+            NodeList parentNodes = (NodeList) xPath.compile(parentXpath).evaluate(doc, XPathConstants.NODESET);
+
+            double minValue = Double.MAX_VALUE;
+
+            for (int i = 0; i < parentNodes.getLength(); i++) {
+                Node parentNode = parentNodes.item(i);
+
+                Node valueNode = (Node) xPath.evaluate(valueXPath, parentNode, XPathConstants.NODE);
+                Node minNode = (Node) xPath.evaluate(minXPath, parentNode, XPathConstants.NODE);
+
+                if (valueNode != null && minNode != null) {
+                    String[] valueParts = valueNode.getTextContent().trim().split("\\s+");
+                    String[] minParts = minNode.getTextContent().trim().split("\\s+");
+
+                    if (valueParts.length > 0 && minParts.length > 0) {
+                        double candidateMin = Double.parseDouble(minParts[0]);
+
+                        if (candidateMin < minValue) {
+                            minValue = candidateMin;
+                            bestResult.clear();
+                            bestResult.add(valueParts[0]);
+                            bestResult.add(minParts[0]);
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            bestResult.clear();
+            bestResult.add("Error: " + e.getMessage());
+        }
+
+        return bestResult;
+    }
+
 }
